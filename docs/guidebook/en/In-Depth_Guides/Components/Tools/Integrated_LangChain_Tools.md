@@ -9,7 +9,7 @@ For the second category of tools, we have implemented a LangChainTool base class
 Note: If you want to directly use the description from LangChain, the description in the configuration file must be set to empty.
 
 An Example of Tool Initialization:
-[Tool Path](../../../../../../sample_standard_app/intelligence/agentic/tool/langchain_tool/human_input_run.yaml)
+[Tool Path](../../../../../../examples/sample_standard_app/intelligence/agentic/tool/samples/langchain_tool/human_input_run.yaml)
 ```yaml
 name: 'human_input_run'
 description: ''
@@ -38,7 +38,7 @@ Parameter Description:
     If you completely override the `init_langchain_tool` method, then you do not need to configure this part.
 
 ## 1. Integrate the DuckDuckGo Tool from LangChain
-[Tool Path](../../../../../../sample_standard_app/intelligence/agentic/tool/langchain_tool/duckduckgo_search.yaml)
+[Tool Path](../../../../../../examples/sample_standard_app/intelligence/agentic/tool/samples/langchain_tool/duckduckgo_search.yaml)
 ```yaml
 name: 'duckduckgo_search'
 description: 'DuckDuckGo Search tool'
@@ -63,7 +63,7 @@ Since the definition of LangChain includes an api_wrapper object, define the obj
 from langchain_community.tools import WikipediaQueryRun
 from langchain_community.utilities import WikipediaAPIWrapper
 
-from sample_standard_app.intelligence.agentic.tool.langchain_tool.langchain_tool import LangChainTool
+from examples.sample_standard_app import LangChainTool
 
 
 class WikipediaTool(LangChainTool):

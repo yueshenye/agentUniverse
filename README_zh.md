@@ -71,10 +71,10 @@ pip install agentUniverse
 ### 工程化搭建
 
 #### 智能体创建与使用
-您可以通过 [智能体介绍](./docs/guidebook/zh/In-Depth_Guides/原理介绍/智能体/智能体.md) 了解智能体的重要组成部分，通过 [智能体创建与使用](./docs/guidebook/zh/In-Depth_Guides/原理介绍/智能体/智能体创建与使用.md) 了解创建智能体的详细过程。您也可以结合官方案例，如 [Python代码生成与执行Agent](./docs/guidebook/zh/样例文档/Python自动执行案例.md) 进一步理解智能体创建与使用过程。 
+您可以通过 [智能体介绍](./docs/guidebook/zh/In-Depth_Guides/原理介绍/智能体/智能体.md) 了解智能体的重要组成部分，通过 [智能体创建与使用](./docs/guidebook/zh/In-Depth_Guides/原理介绍/智能体/智能体创建与使用.md) 了解创建智能体的详细过程。您也可以结合官方案例，如 [Python代码生成与执行Agent](docs/guidebook/zh/实践应用/Python自动执行案例.md) 进一步理解智能体创建与使用过程。 
 
 #### 知识库构建与使用  
-在智能体应用构建中，知识库构建与召回是不可缺少的，agentUniverse框架以[RAG技术](./docs/guidebook/zh/In-Depth_Guides/原理介绍/RAG.md)为基础提供了高效的知识库构建和RAG检索召回环节的标准作业流程。您可以通过[知识介绍](./docs/guidebook/zh/In-Depth_Guides/原理介绍/知识/知识.md)与[知识定义与使用](./docs/guidebook/zh/In-Depth_Guides/原理介绍/知识/知识定义与使用.md)了解其使用方式，进一步通过[如何构建RAG智能体](./docs/guidebook/zh/How-to/如何构建RAG智能体.md)掌握如何快速构建知识库与构建具有召回能力的智能体。
+在智能体应用构建中，知识库构建与召回是不可缺少的，agentUniverse框架以[RAG技术](./docs/guidebook/zh/In-Depth_Guides/原理介绍/RAG.md)为基础提供了高效的知识库构建和RAG检索召回环节的标准作业流程。您可以通过[知识介绍](./docs/guidebook/zh/In-Depth_Guides/原理介绍/知识/知识.md)与[知识定义与使用](./docs/guidebook/zh/In-Depth_Guides/原理介绍/知识/知识定义与使用.md)了解其使用方式，进一步通过[如何构建RAG智能体](docs/guidebook/zh/How-to/构建与使用知识库/如何构建RAG智能体.md)掌握如何快速构建知识库与构建具有召回能力的智能体。
 
 #### 工具自定义与使用  
 在智能体应用构建中，智能体需要连接各种各样的工具，您需要为其指定可使用的工具范围列表。您可以通过[工具创建与使用](./docs/guidebook/zh/In-Depth_Guides/原理介绍/工具/工具创建与使用.md)将各类自有API与服务以工具插件形式接入。目前框架已经集成了LangChain与部分第三方工具包，详细使用法可阅读[集成LangChain工具](./docs/guidebook/zh/In-Depth_Guides/组件列表/工具列表/集成LangChain工具.md)、[现有集成的工具](./docs/guidebook/zh/In-Depth_Guides/组件列表/工具列表/集成LangChain工具.md)。
@@ -96,7 +96,7 @@ pip install magent-ui ruamel.yaml
 
 **一键运行**
 
-运行sample_standard_app/boostrap下的[product_application.py](sample_standard_app/boostrap/platform/product_application.py)文件，一键启动。
+运行sample_standard_app/boostrap下的[product_application.py](examples/sample_standard_app/boostrap/platform/product_application.py)文件，一键启动。
 
 更多详情参考 [产品化平台快速开始](./docs/guidebook/zh/How-to/画布式研发平台快速开始.md)
 与 [产品化平台进阶指南](./docs/guidebook/zh/How-to/画布式研发平台进阶指南.md) 。本功能由 🔗[difizen](https://github.com/difizen/magent) 项目组 X agentUniverse 项目组联合推出。
@@ -150,18 +150,18 @@ BibTeX formatted
 
 ## 案例与样例工程
 ### 官方案例
-🚩 [法律咨询Agent_v2](./docs/guidebook/zh/样例文档/法律咨询案例.md)
+🚩 [法律咨询Agent_v2](docs/guidebook/zh/实践应用/法律咨询案例.md)
 
-🚩 [Python代码生成与执行Agent](./docs/guidebook/zh/样例文档/Python自动执行案例.md)
+🚩 [Python代码生成与执行Agent](docs/guidebook/zh/实践应用/Python自动执行案例.md)
 
-🚩 [基于多轮多Agent的讨论小组](./docs/guidebook/zh/样例文档/讨论组.md)
+🚩 [基于多轮多Agent的讨论小组](docs/guidebook/zh/实践应用/讨论组.md)
 
-🚩 [基于PEER协同模式的金融事件分析](./docs/guidebook/zh/样例文档/金融事件分析案例.md)
+🚩 [基于PEER协同模式的金融事件分析](docs/guidebook/zh/实践应用/金融事件分析案例.md)
 
-🚩 [吴恩达反思工作流翻译智能体复刻](./docs/guidebook/zh/样例文档/翻译案例.md)
+🚩 [吴恩达反思工作流翻译智能体复刻](docs/guidebook/zh/实践应用/翻译案例.md)
 
 ### 示例工程
-⌨️ [agentUniverse 示例项目](sample_standard_app)
+⌨️ [agentUniverse 示例项目](examples/sample_standard_app)
 
 ### 使用aU构建的典型产品
 🔗[支小助-金融从业专家AI助手](https://zhu.alipay.com/?from=au)

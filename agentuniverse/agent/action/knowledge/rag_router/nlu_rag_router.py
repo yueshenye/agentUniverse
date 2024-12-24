@@ -29,6 +29,7 @@ class NluRagRouter(RagRouter):
         agent = AgentManager().get_instance_obj(self.agent_name)
         if self.llm:
             agent.agent_model.profile['llm_model'] = self.llm
+            agent.llm_name = self.llm.get('name')
         store_info = {}
         for _store in store_list:
             store_info[_store] = StoreManager().get_instance_obj(_store).description
