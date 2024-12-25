@@ -11,9 +11,6 @@ from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 from agentuniverse.agent.action.tool.tool import Tool, ToolInput
 from agentuniverse.base.util.env_util import get_from_env
 
-from examples.sample_standard_app.intelligence.agentic.tool.mock_search_tool import MockSearchTool
-
-
 class GoogleSearchTool(Tool):
     """The demo google search tool.
 
@@ -27,8 +24,6 @@ class GoogleSearchTool(Tool):
 
     def execute(self, tool_input: ToolInput):
         input = tool_input.get_data("input")
-        if self.serper_api_key is None:
-            return MockSearchTool().execute(tool_input=tool_input)
         # get top10 results from Google search.
         search = GoogleSerperAPIWrapper(serper_api_key=self.serper_api_key, k=10, gl="us", hl="en", type="search")
         return search.run(query=input)

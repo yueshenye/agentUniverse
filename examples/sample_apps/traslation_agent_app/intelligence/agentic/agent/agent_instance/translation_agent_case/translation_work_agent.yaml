@@ -6,7 +6,7 @@ profile:
   input_keys: ['source_lang','target_lang','source_text']
   output_keys: ['output']
   llm_model:
-    name: 'default_qwen_llm'
+    name: 'qwen_llm'
     max_tokens: 1000
 action:
   tool:
@@ -14,5 +14,5 @@ memory:
   name: ''
 metadata:
   type: 'AGENT'
-  module: 'sample_standard_app.intelligence.agentic.agent.agent_instance.translation_agent_case.translation_agent'
+  module: 'traslation_agent_app.intelligence.agentic.agent.agent_instance.translation_agent_case.translation_agent'
   class: 'TranslationAgent'
