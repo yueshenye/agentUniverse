@@ -34,6 +34,7 @@ profile:
 
     Question: {input}
     Thought: {agent_scratchpad}
+  # prompt_version: pet_insurance_react_agent.cn
   llm_model:
     name: 'qwen_llm'
     model_name: 'qwen2-72b-instruct'
@@ -41,7 +42,9 @@ profile:
     temperature: 0.1
 action:
   tool:
+    - 'pet_insurance_info_tool'
+    - 'pet_insurance_search_context_tool'
 metadata:
   type: 'AGENT'
-  module: 'demo_startup_app_with_single_agent.intelligence.agentic.agent.agent_instance.pet_insurance_react_agent'
+  module: 'demo_startup_app_with_single_agent_and_actions.intelligence.agentic.agent.agent_instance.pet_insurance_react_agent'
   class: 'PetInsuranceReactAgent'

@@ -8,5 +8,5 @@ tool_type: 'api'
 input_keys: ['query']
 metadata:
   type: 'TOOL'
-  module: 'demo_startup_app_with_single_agent.intelligence.agentic.tool.pet_insurance_info_tool'
+  module: 'demo_startup_app_with_single_agent_and_memory.intelligence.agentic.tool.pet_insurance_info_tool'
   class: 'PetInsuranceInfoTool'

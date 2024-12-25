@@ -41,7 +41,11 @@ profile:
     temperature: 0.1
 action:
   tool:
+    - 'pet_insurance_info_tool'
+    - 'pet_insurance_search_context_tool'
+memory:
+  name: 'demo_memory'
 metadata:
   type: 'AGENT'
-  module: 'demo_startup_app_with_single_agent.intelligence.agentic.agent.agent_instance.pet_insurance_react_agent'
+  module: 'demo_startup_app_with_single_agent_and_memory.intelligence.agentic.agent.agent_instance.pet_insurance_react_agent'
   class: 'PetInsuranceReactAgent'
