@@ -1,5 +1,6 @@
 # !/usr/bin/env python3
 # -*- coding:utf-8 -*-
+
 # @Time    : 2024/12/12 22:59
 # @Author  : jijiawei
 # @Email   : jijiawei.jjw@antgroup.com
@@ -26,19 +27,20 @@ class PetInsuranceConsultProAgent(PetRagAgentTemplate):
 
     def customized_execute(self, input_object: InputObject, agent_input: dict, memory: Memory, llm: LLM, prompt: Prompt,
                            **kwargs) -> dict:
-        # 改写问题
+        # 1. rewrite query.
         detail_tool = ToolManager().get_instance_obj('pet_insurance_info_tool')
         tool_res = detail_tool.run(query='宠物医保')
         agent_input['prod_description'] = tool_res
         rewrite_agent: Agent = AgentManager().get_instance_obj('pet_question_rewrite_agent')
         rewrite_agent_res = rewrite_agent.run(**agent_input)
         agent_input['rewrite_question'] = rewrite_agent_res.get_data('rewrite_output')
-        # 问题拆分
+
+        # 2. planning query.
         planning_agent_res = AgentManager().get_instance_obj('pet_question_planning_agent').run(**agent_input)
         split_questions = planning_agent_res.get_data('planning_output')
         sub_query_list = json.loads(split_questions).get('sub_query_list')
 
-        # 问题检索
+        # 3. execute the search tool.
         search_tool: Tool = ToolManager().get_instance_obj('pet_insurance_search_context_tool')
         search_res = ''
         for sub_query in sub_query_list:
@@ -47,7 +49,7 @@ class PetInsuranceConsultProAgent(PetRagAgentTemplate):
         agent_input['search_context'] = search_res
         LOGGER.info(f'tool api search result is: {search_res}')
 
-        # llm表达
+        # 4. invoke agent.
         process_llm_token(llm, prompt.as_langchain(), self.agent_model.profile, agent_input)
         chain = prompt.as_langchain() | llm.as_langchain_runnable(
             self.agent_model.llm_params()) | StrOutputParser()

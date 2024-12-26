@@ -4,7 +4,6 @@
 # @Author  : jijiawei
 # @Email   : jijiawei.jjw@antgroup.com
 # @FileName: pet_insurance_consult_agent_test.py
-
 from agentuniverse.base.agentuniverse import AgentUniverse
 from agentuniverse.agent.agent import Agent
 from agentuniverse.agent.agent_manager import AgentManager
