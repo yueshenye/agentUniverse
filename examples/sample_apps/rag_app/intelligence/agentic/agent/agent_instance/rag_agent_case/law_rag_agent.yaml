@@ -20,9 +20,6 @@ profile:
   llm_model:
     name: 'qwen_llm'
     model_name: 'qwen-max'
-plan:
-  planner:
-    name: 'rag_planner'
 action:
   tool:
     - 'google_search_tool'

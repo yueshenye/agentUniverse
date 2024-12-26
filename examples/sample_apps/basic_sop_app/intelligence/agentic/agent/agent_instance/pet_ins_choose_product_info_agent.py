@@ -49,8 +49,3 @@ class ChooseProductInfoAgent(AgentTemplate):
         output = parse_json_markdown(output)
         final_result['item_list'] = output.get('item_list')
         return final_result
-
-    def initialize_by_component_configer(self, component_configer: AgentConfiger) -> 'ChooseProductInfoAgent':
-        super().initialize_by_component_configer(component_configer)
-        self.prompt_version = self.agent_model.profile.get('prompt_version')
-        return self

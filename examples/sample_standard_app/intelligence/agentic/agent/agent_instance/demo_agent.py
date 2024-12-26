@@ -5,9 +5,6 @@
 # @Author  : wangchongshi
 # @Email   : wangchongshi.wcs@antgroup.com
 # @FileName: rag_template.py
-from typing import Optional
-
-from agentuniverse.base.config.component_configer.configers.agent_configer import AgentConfiger
 from langchain_core.output_parsers import StrOutputParser
 
 from agentuniverse.base.util.prompt_util import process_llm_token
@@ -22,12 +19,6 @@ from agentuniverse.prompt.prompt import Prompt
 
 
 class DemoAgent(Agent):
-
-    llm_name: Optional[str] = ''
-    memory_name: Optional[str] = None
-    tool_names: Optional[list[str]] = None
-    knowledge_names: Optional[list[str]] = None
-    prompt_version: Optional[str] = None
 
     def input_keys(self) -> list[str]:
         return ['input']
@@ -63,12 +54,3 @@ class DemoAgent(Agent):
                                agent_input=agent_input,
                                content=f"Human: {agent_input.get('input')}, AI: {res}")
         return {**agent_input, 'output': res}
-
-    def initialize_by_component_configer(self, component_configer: AgentConfiger) -> 'DemoAgent':
-        super().initialize_by_component_configer(component_configer)
-        self.prompt_version = self.agent_model.profile.get('prompt_version', 'default_rag_agent.cn')
-        self.llm_name = self.agent_model.profile.get('llm_model', {}).get('name')
-        self.memory_name = self.agent_model.memory.get('name')
-        self.tool_names = self.agent_model.action.get('tool', [])
-        self.knowledge_names = self.agent_model.action.get('knowledge', [])
-        return self

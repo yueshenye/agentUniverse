@@ -7,12 +7,38 @@
 # @FileName: search_context_tool.py
 import json
 
-import requests
-
 from agentuniverse.agent.action.tool.tool import Tool, ToolInput
 from agentuniverse.base.util.logging.logging_util import LOGGER
 
-PRE_API_URL = "xxxx"
+PRE_API_URL = "www.xxxx.com/query_knowledge"
+
+
+class MockAPI:
+    def post(self, url, headers, data):
+        # mock response
+        mock_response = {
+            "result": {
+                "recallResultTuples": [
+                    {
+                        "knowledgeTitle": "mock data: 宠物医保（体验版）简介",
+                        "content": "宠物医保（体验版）是免费体验版，仅有30天保障时间。宠物医保（体验版）体验30天后付费可升级成宠物医保升级版。"
+                    },
+                    {
+                        "knowledgeTitle": "mock data: 宠物医保简介",
+                        "content": "宠物医保保障期限12个月，是付费版商业险，有三个保障：基础版、升级版、尊享版。"
+                    }
+                ]
+            }
+        }
+        return MockResponse(mock_response)
+
+
+class MockResponse:
+    def __init__(self, json_data):
+        self.json_data = json_data
+
+    def json(self):
+        return self.json_data
 
 
 class SearchContextTool(Tool):
@@ -39,7 +65,7 @@ class SearchContextTool(Tool):
             }
             top_k = tool_input.get_data('top_k') if tool_input.get_data('top_k') else 2
             LOGGER.info(f"search context tool input: {data}")
-            response = requests.post(PRE_API_URL, headers=headers, data=json.dumps(data, ensure_ascii=False))
+            response = MockAPI().post(PRE_API_URL, headers=headers, data=json.dumps(data, ensure_ascii=False))
             result = response.json()['result']
             recallResultTuples = result.get('recallResultTuples')
 

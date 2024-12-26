@@ -1,17 +1,13 @@
 # !/usr/bin/env python3
 # -*- coding:utf-8 -*-
+
 # @Time    : 2024/12/12 11:24
 # @Author  : jijiawei
 # @Email   : jijiawei.jjw@antgroup.com
 # @FileName: pet_insurance_react_agent.py
 from typing import Sequence, Optional, Union, List
 
-from agentuniverse.agent.memory.memory_manager import MemoryManager
-from agentuniverse.base.util.memory_util import generate_messages
-from agentuniverse.llm.llm_manager import LLMManager
 from agentuniverse.prompt.chat_prompt import ChatPrompt
-from agentuniverse.prompt.prompt_manager import PromptManager
-from agentuniverse.prompt.prompt_model import AgentPromptModel
 from langchain.agents.format_scratchpad import format_log_to_str
 from langchain.agents.output_parsers import ReActSingleInputOutputParser
 from langchain.agents import AgentExecutor, AgentOutputParser
@@ -21,7 +17,6 @@ from langchain_core.prompts import BasePromptTemplate
 from langchain_core.runnables import RunnableConfig, RunnablePassthrough, Runnable
 from langchain_core.tools import BaseTool, ToolsRenderer, render_text_description
 
-from agentuniverse.agent.memory.message import Message
 from agentuniverse.base.config.component_configer.configers.agent_configer import AgentConfiger
 from agentuniverse.base.util.agent_util import assemble_memory_input, assemble_memory_output
 from agentuniverse.agent.action.knowledge.knowledge import Knowledge
@@ -42,8 +37,6 @@ class PetInsuranceReactAgent(Agent):
     agent_names: Optional[list[str]] = None
     stop_sequence: Optional[list[str]] = None
     max_iterations: Optional[int] = None
-    llm_name: Optional[str] = ''
-    memory_name: Optional[str] = None
     tool_names: Optional[list[str]] = None
     knowledge_names: Optional[list[str]] = None
     prompt_version: Optional[str] = None
@@ -72,9 +65,6 @@ class PetInsuranceReactAgent(Agent):
         prompt: Prompt = self.process_prompt(agent_input, **kwargs)
         return self.customized_execute(input_object, agent_input, memory, llm, prompt, **kwargs)
 
-    def process_llm(self, **kwargs) -> LLM:
-        return LLMManager().get_instance_obj(self.llm_name)
-
     def customized_execute(self, input_object: InputObject, agent_input: dict, memory: Memory, llm: LLM, prompt: Prompt,
                            **kwargs) -> dict:
         assemble_memory_input(memory, agent_input)
@@ -97,51 +87,7 @@ class PetInsuranceReactAgent(Agent):
 
     def process_prompt(self, agent_input: dict, **kwargs) -> ChatPrompt:
         """处理提示词"""
-        expert_framework = agent_input.pop('expert_framework', '') or ''
-
-        profile: dict = self.agent_model.profile
-
-        profile_instruction = profile.get('instruction')
-        profile_instruction = expert_framework + profile_instruction if profile_instruction else profile_instruction
-
-        profile_prompt_model: AgentPromptModel = AgentPromptModel(introduction=profile.get('introduction'),
-                                                                  target=profile.get('target'),
-                                                                  instruction=profile_instruction)
-
-        # get the prompt by the prompt version
-        version_prompt: Prompt = PromptManager().get_instance_obj(self.prompt_version)
-
-        if version_prompt is None and not profile_prompt_model:
-            raise Exception("Either the `prompt_version` or `introduction & target & instruction`"
-                            " in agent profile configuration should be provided.")
-        if version_prompt:
-            version_prompt_model: AgentPromptModel = AgentPromptModel(
-                introduction=getattr(version_prompt, 'introduction', ''),
-                target=getattr(version_prompt, 'target', ''),
-                instruction=expert_framework + getattr(version_prompt, 'instruction', ''))
-            profile_prompt_model = profile_prompt_model + version_prompt_model
-
-        chat_prompt = ChatPrompt().build_prompt(profile_prompt_model, ['introduction', 'target', 'instruction'])
-        image_urls: list = agent_input.pop('image_urls', []) or []
-        if image_urls:
-            chat_prompt.generate_image_prompt(image_urls)
-        return chat_prompt
-
-    def process_memory(self, agent_input: dict, **kwargs) -> Memory | None:
-        """处理记忆"""
-        memory: Memory = MemoryManager().get_instance_obj(component_instance_name=self.memory_name)
-        if memory is None:
-            return None
-
-        chat_history: list = agent_input.get('chat_history')
-        # generate a list of temporary messages from the given chat history and add them to the memory instance.
-        temporary_messages: list[Message] = generate_messages(chat_history)
-        if temporary_messages:
-            memory.add(temporary_messages, **agent_input)
-
-        params: dict = dict()
-        params['agent_llm_name'] = self.llm_name
-        return memory.set_by_agent_model(**params)
+        return super().process_prompt(agent_input=agent_input, prompt_version=self.prompt_version)
 
     def create_react_agent(
             self,
@@ -154,12 +100,6 @@ class PetInsuranceReactAgent(Agent):
             stop_sequence: Union[bool, List[str]] = True,
             bind_params: Optional[dict],
     ) -> Runnable:
-        missing_vars = {"tools", "tool_names", "agent_scratchpad"}.difference(
-            prompt.input_variables + list(prompt.partial_variables)
-        )
-        if missing_vars:
-            raise ValueError(f"Prompt missing required variables: {missing_vars}")
-
         prompt = prompt.partial(
             tools=tools_renderer(list(tools)),
             tool_names=", ".join([t.name for t in tools]),
@@ -214,10 +154,8 @@ class PetInsuranceReactAgent(Agent):
         config.setdefault("callbacks", callbacks)
         return config
 
-    def initialize_by_component_configer(self, component_configer: AgentConfiger) -> 'ReActAgentTemplate':
+    def initialize_by_component_configer(self, component_configer: AgentConfiger) -> 'PetInsuranceReactAgent':
         super().initialize_by_component_configer(component_configer)
-        self.llm_name = self.agent_model.profile.get('llm_model', {}).get('name')
-        self.memory_name = self.agent_model.memory.get('name')
         self.tool_names = self.agent_model.action.get('tool', [])
         self.knowledge_names = self.agent_model.action.get('knowledge', [])
         self.prompt_version = self.agent_model.profile.get('prompt_version', 'default_react_agent.cn')

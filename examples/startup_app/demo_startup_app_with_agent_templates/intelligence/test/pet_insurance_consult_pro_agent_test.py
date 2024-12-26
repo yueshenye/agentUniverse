@@ -20,4 +20,4 @@ def chat(question: str):
 
 if __name__ == '__main__':
     res = chat("医保怎么升级")
-    print(f'最终执行结果：{res}')
+    print("The result of the multi-agent execution is: \n" + res)

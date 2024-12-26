@@ -229,10 +229,12 @@ class Agent(ComponentBase, ABC):
         )
 
     def process_llm(self, **kwargs) -> LLM:
-        return LLMManager().get_instance_obj(self.llm_name)
+        llm_name = kwargs.get('llm_name') or self.agent_model.profile.get('llm_model', {}).get('name')
+        return LLMManager().get_instance_obj(llm_name)
 
     def process_memory(self, agent_input: dict, **kwargs) -> Memory | None:
-        memory: Memory = MemoryManager().get_instance_obj(component_instance_name=self.memory_name)
+        memory_name = kwargs.get('memory_name') or self.agent_model.memory.get('name')
+        memory: Memory = MemoryManager().get_instance_obj(memory_name)
         if memory is None:
             return None
 
@@ -243,7 +245,7 @@ class Agent(ComponentBase, ABC):
             memory.add(temporary_messages, **agent_input)
 
         params: dict = dict()
-        params['agent_llm_name'] = self.llm_name
+        params['agent_llm_name'] = kwargs.get('llm_name') or self.agent_model.profile.get('llm_model', {}).get('name')
         return memory.set_by_agent_model(**params)
 
     def invoke_chain(self, chain: RunnableSerializable[Any, str], agent_input: dict, input_object: InputObject,
@@ -281,12 +283,13 @@ class Agent(ComponentBase, ABC):
         return "".join(result)
 
     def invoke_tools(self, input_object: InputObject, **kwargs) -> str:
-        if not self.tool_names:
+        tool_names = kwargs.get('tool_names') or self.agent_model.action.get('tool', [])
+        if not tool_names:
             return ''
 
         tool_results: list = list()
 
-        for tool_name in self.tool_names:
+        for tool_name in tool_names:
             tool: Tool = ToolManager().get_instance_obj(tool_name)
             if tool is None:
                 continue
@@ -295,12 +298,13 @@ class Agent(ComponentBase, ABC):
         return "\n\n".join(tool_results)
 
     def invoke_knowledge(self, query_str: str, input_object: InputObject, **kwargs) -> str:
-        if not self.knowledge_names or not query_str:
+        knowledge_names = kwargs.get('knowledge_names') or self.agent_model.action.get('knowledge', [])
+        if not knowledge_names or not query_str:
             return ''
 
         knowledge_results: list = list()
 
-        for knowledge_name in self.knowledge_names:
+        for knowledge_name in knowledge_names:
             knowledge: Knowledge = KnowledgeManager().get_instance_obj(knowledge_name)
             if knowledge is None:
                 continue
@@ -324,7 +328,8 @@ class Agent(ComponentBase, ABC):
                                                                   instruction=profile_instruction)
 
         # get the prompt by the prompt version
-        version_prompt: Prompt = PromptManager().get_instance_obj(self.prompt_version)
+        prompt_version = kwargs.get('prompt_version') or self.agent_model.profile.get('prompt_version')
+        version_prompt: Prompt = PromptManager().get_instance_obj(prompt_version)
 
         if version_prompt is None and not profile_prompt_model:
             raise Exception("Either the `prompt_version` or `introduction & target & instruction`"

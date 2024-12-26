@@ -20,7 +20,10 @@ class WorkflowAgentsTest(unittest.TestCase):
 
     def test_discussion_agents(self):
         instance: Agent = AgentManager().get_instance_obj('demo_workflow_agent')
-        output_object: OutputObject = instance.run()
+        output_object: OutputObject = instance.run(input="姚明是谁？")
+        res_info = f"\nWorkflow agent execution result is :\n"
+        res_info += output_object.get_data('output')
+        print(res_info)
 
 
 if __name__ == '__main__':

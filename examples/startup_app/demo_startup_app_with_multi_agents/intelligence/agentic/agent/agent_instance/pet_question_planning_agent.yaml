@@ -4,7 +4,7 @@ info:
 profile:
   prompt_version: 'pet_planning_query_agent.cn'
   llm_model:
-    name: 'ant_maya_qwen_72b_stream'
+    name: 'qwen_llm'
     temperature: 0.3
 metadata:
   type: 'AGENT'

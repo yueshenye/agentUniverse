@@ -13,6 +13,7 @@ from agentuniverse.agent.agent_manager import AgentManager
 from agentuniverse.agent.input_object import InputObject
 from agentuniverse.agent.memory.memory import Memory
 from agentuniverse.base.util.agent_util import assemble_memory_output
+from agentuniverse.base.util.logging.logging_util import LOGGER
 from agentuniverse.base.util.prompt_util import process_llm_token
 from agentuniverse.llm.llm import LLM
 from agentuniverse.prompt.prompt import Prompt
@@ -44,6 +45,7 @@ class PetInsuranceConsultProAgent(PetRagAgentTemplate):
             search_res += search_tool.run(input=sub_query) + '\n'
 
         agent_input['search_context'] = search_res
+        LOGGER.info(f'tool api search result is: {search_res}')
 
         # llm表达
         process_llm_token(llm, prompt.as_langchain(), self.agent_model.profile, agent_input)

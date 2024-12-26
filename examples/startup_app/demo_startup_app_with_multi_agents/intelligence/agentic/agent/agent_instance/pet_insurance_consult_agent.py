@@ -25,6 +25,7 @@ from agentuniverse.agent.memory.message import Message
 from agentuniverse.base.config.component_configer.configers.agent_configer import AgentConfiger
 from agentuniverse.base.util.agent_util import assemble_memory_input, assemble_memory_output
 from agentuniverse.base.util.common_util import stream_output
+from agentuniverse.base.util.logging.logging_util import LOGGER
 from agentuniverse.base.util.memory_util import generate_messages
 from agentuniverse.base.util.prompt_util import process_llm_token
 from agentuniverse.llm.llm import LLM
@@ -33,6 +34,7 @@ from agentuniverse.prompt.chat_prompt import ChatPrompt
 from agentuniverse.prompt.prompt import Prompt
 from agentuniverse.prompt.prompt_manager import PromptManager
 from agentuniverse.prompt.prompt_model import AgentPromptModel
+
 
 # todo 工程中结合文档添加更多文档说明
 
@@ -89,6 +91,7 @@ class PetInsuranceConsultAgent(Agent):
             search_res += search_tool.run(input=sub_query) + '\n'
 
         agent_input['search_context'] = search_res
+        LOGGER.info(f'tool api search result is: {search_res}')
 
         # llm表达
         process_llm_token(llm, prompt.as_langchain(), self.agent_model.profile, agent_input)

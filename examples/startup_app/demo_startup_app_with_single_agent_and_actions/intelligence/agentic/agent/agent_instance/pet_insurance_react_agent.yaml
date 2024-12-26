@@ -37,7 +37,7 @@ profile:
   # prompt_version: pet_insurance_react_agent.cn
   llm_model:
     name: 'qwen_llm'
-    model_name: 'qwen2-72b-instruct'
+    model_name: 'qwen-max'
     stop: 'Observation'
     temperature: 0.1
 action:
