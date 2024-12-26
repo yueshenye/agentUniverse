@@ -4,7 +4,6 @@
 # @Author  : jijiawei
 # @Email   : jijiawei.jjw@antgroup.com
 # @FileName: pet_ins_recommend_sop_agent.py
-
 from langchain_core.output_parsers import StrOutputParser
 
 from agentuniverse.base.util.prompt_util import process_llm_token
@@ -20,10 +19,7 @@ from agentuniverse.agent.template.agent_template import AgentTemplate
 from agentuniverse.base.config.component_configer.configers.agent_configer import AgentConfiger
 from agentuniverse.base.util.logging.logging_util import LOGGER
 from agentuniverse.llm.llm import LLM
-from agentuniverse.prompt.chat_prompt import ChatPrompt
 from agentuniverse.prompt.prompt import Prompt
-from agentuniverse.prompt.prompt_manager import PromptManager
-from agentuniverse.prompt.prompt_model import AgentPromptModel
 from examples.sample_apps.basic_sop_app.intelligence.utils.constant import product_info
 
 
@@ -119,34 +115,3 @@ class PetInsRecommendSopAgent(AgentTemplate):
         res = self.invoke_chain(chain, agent_input, input_object, **kwargs)
         LOGGER.info(f"pet insurance recommend sop agent res: {res}")
         return {'output': res}
-
-    def process_prompt(self, agent_input: dict, **kwargs) -> ChatPrompt:
-        profile: dict = self.agent_model.profile
-
-        profile_instruction = profile.get('instruction')
-        profile_instruction = profile_instruction if profile_instruction else profile_instruction
-
-        profile_prompt_model: AgentPromptModel = AgentPromptModel(introduction=profile.get('introduction'),
-                                                                  target=profile.get('target'),
-                                                                  instruction=profile_instruction)
-
-        # get the prompt by the prompt version
-        version_prompt: Prompt = PromptManager().get_instance_obj(self.prompt_version)
-
-        if version_prompt is None and not profile_prompt_model:
-            raise Exception("Either the `prompt_version` or `introduction & target & instruction`"
-                            " in agent profile configuration should be provided.")
-        if version_prompt:
-            version_prompt_model: AgentPromptModel = AgentPromptModel(
-                introduction=getattr(version_prompt, 'introduction', ''),
-                target=getattr(version_prompt, 'target', ''),
-                instruction=getattr(version_prompt, 'instruction', ''))
-            profile_prompt_model = profile_prompt_model + version_prompt_model
-
-        chat_prompt = ChatPrompt().build_prompt(profile_prompt_model, ['introduction', 'target', 'instruction'])
-        return chat_prompt
-
-    def initialize_by_component_configer(self, component_configer: AgentConfiger) -> 'SopAAgent':
-        super().initialize_by_component_configer(component_configer)
-        self.prompt_version = self.agent_model.profile.get('prompt_version')
-        return self

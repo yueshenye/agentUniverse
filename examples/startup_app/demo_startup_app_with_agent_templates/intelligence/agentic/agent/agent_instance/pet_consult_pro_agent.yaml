@@ -4,7 +4,7 @@ info:
 profile:
   prompt_version: pet_insurance_consult.cn
   llm_model:
-    name: 'ant_maya_qwen_72b_stream'
+    name: 'qwen_llm'
     temperature: 0.1
 action:
   tool:

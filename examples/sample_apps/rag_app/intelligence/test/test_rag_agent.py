@@ -19,7 +19,7 @@ class RagAgentTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        AgentUniverse().start(config_path='../../config/config.toml')
+        AgentUniverse().start(config_path='../../config/config.toml', core_mode=True)
 
     def test_rag_agent(self):
         """Test demo rag agent."""
