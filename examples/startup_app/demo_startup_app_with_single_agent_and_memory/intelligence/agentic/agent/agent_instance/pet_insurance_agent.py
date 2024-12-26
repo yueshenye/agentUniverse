@@ -21,13 +21,14 @@ from examples.startup_app.demo_startup_app_with_single_agent.intelligence.utils.
 class PetInsuranceAgent(Agent):
 
     def input_keys(self) -> list[str]:
-        return ['input']
+        return ['input', 'session_id']
 
     def output_keys(self) -> list[str]:
         return ['output']
 
     def parse_input(self, input_object: InputObject, agent_input: dict) -> dict:
         agent_input['input'] = input_object.get_data('input')
+        agent_input['session_id'] = input_object.get_data('session_id')
         return agent_input
 
     def parse_result(self, agent_result: dict) -> dict:

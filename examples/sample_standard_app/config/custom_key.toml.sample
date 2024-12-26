@@ -3,6 +3,9 @@
 # Perform a full component scan and registration for all the paths under this list.
 example_key = 'AnExampleKey'
 
+#  ========================================================================
+#  The following section is used for key configuration of models.
+#  ========================================================================
 # models
 #kimi default name: default_kimi_llm
 #KIMI_API_KEY='sk-xxxxxxxx'
@@ -35,12 +38,17 @@ example_key = 'AnExampleKey'
 #ZHIPU_API_KEY='xxxxxx'
 #ZHIPU_API_BASE='https://open.bigmodel.cn/api/paas/v4/'
 
+#  ========================================================================
+#  The following section is used for key configuration of search tools.
+#  ========================================================================
 # search
 #Google search
 #SERPER_API_KEY='xxxxxx'
 #
-##search api
-#SEARCHAPI_API_KEY='xxxxxx'
-#
 ##bing seacrh
 #BING_SUBSCRIPTION_KEY='xxxxxx'
+#
+# You could sign up for a free account at https://www.searchapi.io/
+# And get the SEARCHAPI_API_KEY api key (100 free queries).
+##search api
+#SEARCHAPI_API_KEY='xxxxxx'

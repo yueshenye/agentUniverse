@@ -14,6 +14,9 @@ profile:
     背景信息是:
     {background}
     
+    历史的会话是:
+    {chat_history}
+    
     开始！
     需要回答的问题是: {input}
   llm_model:
