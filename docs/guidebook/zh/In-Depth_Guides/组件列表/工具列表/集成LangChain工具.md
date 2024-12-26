@@ -8,6 +8,8 @@
 
 注意，如果你想直接使用LangChain中的description，在配置文件中description必须要配置为空
 
+[//]: # (todo 文档修改)
+
 一个工具初始化示例：
 [工具地址](../../../../../../examples/sample_standard_app/intelligence/agentic/tool/samples/langchain_tool/human_input_run.yaml)
 ```yaml
