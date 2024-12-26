@@ -31,9 +31,10 @@ profile:
 action:
   # Please select the tools and knowledge base.
   tool:
-    - 'demo_search_tool'
+    - 'mock_search_tool'
+#    - 'demo_search_tool'
   knowledge:
-    - 'demo_knowledge'
+#    - 'demo_knowledge'
 memory:
   # Please select the memory.
   name: 'demo_memory'
