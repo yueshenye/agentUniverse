@@ -1,6 +1,6 @@
-name: 'pet_insurance_maya_stream_llm'
-description: 'pet insurance openai llm with spi'
-model_name: 'pet_insurance_maya_stream_llm"'
+name: 'pet_insurance_maya_llm'
+description: 'pet insurance llm'
+model_name: 'pet_insurance_stream_llm"'
 max_tokens: 3000
 streaming: True
 request_timeout: 60
@@ -13,5 +13,5 @@ ext_info:
   query_field: "query"
 metadata:
   type: 'LLM'
-  module: 'demo_startup_app_with_single_agent_and_memory.intelligence.agentic.llm.maya.pet_insurance_maya_llm'
+  module: 'demo_startup_app_with_single_agent.intelligence.agentic.llm.maya.pet_insurance_maya_llm'
   class: 'PetInsuranceMayaLLM'

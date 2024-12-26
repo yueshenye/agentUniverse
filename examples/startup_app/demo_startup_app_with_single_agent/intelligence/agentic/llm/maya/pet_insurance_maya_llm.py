@@ -19,6 +19,27 @@ from examples.startup_app.demo_startup_app_with_single_agent.intelligence.agenti
 
 
 class PetInsuranceMayaLLM(LLM):
+    """
+    PetInsuranceMayaLLM是一个企业内部私有模型连接示例，通过配置sceneName（模型场景码）/ chainName（模型版本号）/ serviceId（模型服务ID）/ endpoint（模型url）等信息，联通私有模型服务。
+
+    模型入参包括prompt/stop/temperature等信息；
+    模型出参：
+        1. 非流式：json格式，样例为
+            {"success": True, "result": {
+                "output_string": "This is the llm mock response."
+            }}
+
+        2. 流式：iterator，样例为
+        [
+            {"out_string": "This "},
+            {"out_string": "is "},
+            {"out_string": "the "},
+            {"out_string": "llm "},
+            {"out_string": "mock "},
+            {"out_string": "response"},
+            {"out_string": "."}
+        ]
+    """
     model_name: Optional[str] = "pet_insurance_maya_llm"
     sceneName: Optional[str] = None
     chainName: Optional[str] = None
@@ -32,8 +53,10 @@ class PetInsuranceMayaLLM(LLM):
         """
         Call the model on the inputs.
         """
+        # 非流式调用
         if not self.streaming:
             return self.no_streaming_call(*args, **kwargs)
+        # 流式调用
         else:
             return self.streaming_call(*args, **kwargs)
 
@@ -43,12 +66,7 @@ class PetInsuranceMayaLLM(LLM):
         Parse the output of the model.
         """
         if "result" in result:
-            if "output_string" in result["result"]:
-                text = result["result"]["output_string"]
-            elif "result" in result["result"]:
-                text = result["result"]["result"]
-            else:
-                text = result["result"]["out_string"]
+            text = result["result"]["output_string"]
         else:
             raise ValueError("No output found in response.")
         return LLMOutput(text=text, raw=result)
@@ -121,6 +139,7 @@ class PetInsuranceMayaLLM(LLM):
                           stream: Optional[bool] = None,
                           **kwargs) -> LLMOutput:
         suffix = f"?model_name={self.model_name}"
+        # 进行模型http调用
         # resp = requests.post(
         #     url=self.endpoint + suffix,
         #     headers={"Content-Type": "application/json"},
@@ -147,6 +166,7 @@ class PetInsuranceMayaLLM(LLM):
                        stream: Optional[bool] = None,
                        **kwargs):
         suffix = f"?model_name={self.model_name}"
+        # 进行模型http调用
         # with requests.post(
         #         url=self.endpoint + suffix,
         #         data=json.dumps(self.request_stream_data(prompt, stop[0] if stop else ''), ensure_ascii=False).encode(
