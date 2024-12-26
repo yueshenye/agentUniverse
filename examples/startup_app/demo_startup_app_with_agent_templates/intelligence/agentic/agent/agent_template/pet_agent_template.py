@@ -4,18 +4,22 @@
 # @Time    : 2024/12/12 22:54
 # @Author  : jijiawei
 # @Email   : jijiawei.jjw@antgroup.com
-# @FileName: PetInsuranceRagAgentTemplate.py
-from langchain_core.output_parsers import StrOutputParser
+# @FileName: PetAgentTemplate.py
+import json
+
+from agentuniverse.agent.action.tool.tool_manager import ToolManager
+from agentuniverse.agent.agent import Agent
+from agentuniverse.agent.agent_manager import AgentManager
 from agentuniverse.agent.input_object import InputObject
-from agentuniverse.agent.memory.memory import Memory
+from agentuniverse.agent.output_object import OutputObject
 from agentuniverse.agent.template.agent_template import AgentTemplate
-from agentuniverse.base.util.agent_util import assemble_memory_input, assemble_memory_output
-from agentuniverse.base.util.prompt_util import process_llm_token
-from agentuniverse.llm.llm import LLM
-from agentuniverse.prompt.prompt import Prompt
+from agentuniverse.base.config.component_configer.configers.agent_configer import AgentConfiger
 
 
-class PetRagAgentTemplate(AgentTemplate):
+class PetAgentTemplate(AgentTemplate):
+    planning_agent_name: str = None
+    executing_agent_name: str = None
+    expressing_agent_name: str = None
 
     def input_keys(self) -> list[str]:
         """Return the input keys of the Agent."""
@@ -32,19 +36,67 @@ class PetRagAgentTemplate(AgentTemplate):
     def parse_result(self, agent_result: dict) -> dict:
         return agent_result
 
-    def customized_execute(self, input_object: InputObject, agent_input: dict, memory: Memory, llm: LLM, prompt: Prompt,
-                           **kwargs) -> dict:
-        # 1. assemble the memory input.
-        assemble_memory_input(memory, agent_input)
-        # 2. process the prompt tokens.
-        process_llm_token(llm, prompt.as_langchain(), self.agent_model.profile, agent_input)
-        # 3. invoke agent.
-        chain = prompt.as_langchain() | llm.as_langchain_runnable(
-            self.agent_model.llm_params()) | StrOutputParser()
-        res = self.invoke_chain(chain, agent_input, input_object, **kwargs)
-        # 4. assemble the memory output.
-        assemble_memory_output(memory=memory,
-                               agent_input=agent_input,
-                               content=f"Human: {agent_input.get('input')}, AI: {res}")
-        # 5. return result.
-        return {**agent_input, 'output': res}
+    def execute(self, input_object: InputObject, agent_input: dict, **kwargs) -> dict:
+        detail_tool = ToolManager().get_instance_obj('pet_insurance_info_tool')
+        tool_res = detail_tool.run(query='宠物医保')
+        input_object.add_data('prod_description', tool_res)
+
+        agents = self._generate_agents()
+
+        # 1. planning agent.
+        planning_result = self._invoke_planning(input_object, agent_input, agents)
+
+        # 2. executing agent.
+        executing_result = self._invoke_executing(input_object, agents)
+
+        # 3. expressing agent.
+        expressing_result = self._invoke_expressing(input_object, agents)
+
+        return {**agent_input, 'output': expressing_result.get('output', '')}
+
+    def _invoke_planning(self, input_object: InputObject, agent_input: dict, agents: dict) -> dict:
+        planning_agent: Agent = agents.get('planning')
+        if not planning_agent:
+            planning_result = OutputObject({"sub_query_list": [agent_input.get('input')]})
+            sub_query_list = [agent_input.get('input')]
+        else:
+            planning_result = planning_agent.run(**input_object.to_dict())
+            split_questions = planning_result.get_data('planning_output')
+            sub_query_list = json.loads(split_questions).get('sub_query_list')
+        input_object.add_data('sub_query_list', sub_query_list)
+        return planning_result.to_dict()
+
+    def _invoke_executing(self, input_object: InputObject, agents: dict) -> dict:
+        executing_agent: Agent = agents.get('executing')
+        if not executing_agent:
+            executing_result = OutputObject({"search_context": ''})
+        else:
+            executing_result = executing_agent.run(**input_object.to_dict())
+        input_object.add_data('search_context', executing_result.get_data('search_context'))
+        return executing_result.to_dict()
+
+    def _invoke_expressing(self, input_object: InputObject, agents: dict) -> dict:
+        expressing_agent: Agent = agents.get('expressing')
+        if not expressing_agent:
+            expressing_result = OutputObject({"output": ''})
+        else:
+            expressing_result = expressing_agent.run(**input_object.to_dict())
+        return expressing_result.to_dict()
+
+    def _generate_agents(self) -> dict:
+        planning_agent = AgentManager().get_instance_obj(self.planning_agent_name)
+        executing_agent = AgentManager().get_instance_obj(self.executing_agent_name)
+        expressing_agent = AgentManager().get_instance_obj(self.expressing_agent_name)
+        return {'planning': planning_agent,
+                'executing': executing_agent,
+                'expressing': expressing_agent}
+
+    def initialize_by_component_configer(self, component_configer: AgentConfiger) -> 'PetAgentTemplate':
+        super().initialize_by_component_configer(component_configer)
+        if self.agent_model.profile.get('planning') is not None:
+            self.planning_agent_name = self.agent_model.profile.get('planning')
+        if self.agent_model.profile.get('executing') is not None:
+            self.executing_agent_name = self.agent_model.profile.get('executing')
+        if self.agent_model.profile.get('expressing') is not None:
+            self.expressing_agent_name = self.agent_model.profile.get('expressing')
+        return self

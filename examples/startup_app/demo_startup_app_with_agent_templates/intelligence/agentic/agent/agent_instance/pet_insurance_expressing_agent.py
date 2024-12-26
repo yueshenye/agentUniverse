@@ -1,36 +1,38 @@
 # !/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
-# @Time    : 2024/12/12 20:58
-# @Author  : jijiawei
-# @Email   : jijiawei.jjw@antgroup.com
-# @FileName: pet_insurance_rewrite_agent.py
+# @Time    : 2024/12/26 20:56
+# @Author  : wangchongshi
+# @Email   : wangchongshi.wcs@antgroup.com
+# @FileName: pet_insurance_expressing_agent.py
+from langchain_core.output_parsers import StrOutputParser
+
 from agentuniverse.agent.agent import Agent
 from agentuniverse.agent.input_object import InputObject
 from agentuniverse.base.util.logging.logging_util import LOGGER
 from agentuniverse.base.util.prompt_util import process_llm_token
 from agentuniverse.llm.llm import LLM
 from agentuniverse.prompt.prompt import Prompt
-from langchain_core.output_parsers import StrOutputParser
 
 
-class PetInsuranceRewriteAgent(Agent):
+class PetInsuranceExpressingAgent(Agent):
 
     def input_keys(self) -> list[str]:
-        return ['input', 'prod_description']
+        return ['input', 'prod_description', 'search_context']
 
     def output_keys(self) -> list[str]:
-        return ['rewrite_output']
+        return ['output']
 
     def parse_input(self, input_object: InputObject, agent_input: dict) -> dict:
         agent_input['input'] = input_object.get_data('input')
         agent_input['prod_description'] = input_object.get_data('prod_description')
+        agent_input['search_context'] = input_object.get_data('search_context')
         return agent_input
 
     def parse_result(self, agent_result: dict) -> dict:
-        rewrite_output = agent_result['output']
-        LOGGER.info(f'智能体 pet_question_planning_agent 执行结果为： {rewrite_output}')
-        return {**agent_result, 'rewrite_output': agent_result['output']}
+        output = agent_result['output']
+        LOGGER.info(f'智能体 pet_insurance_expressing_agent 执行结果为： {output}')
+        return {**agent_result, 'output': output}
 
     def execute(self, input_object: InputObject, agent_input: dict, **kwargs) -> dict:
         # 1. get the llm instance.
