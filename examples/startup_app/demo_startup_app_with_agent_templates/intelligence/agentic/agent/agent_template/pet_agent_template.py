@@ -31,23 +31,22 @@ class PetAgentTemplate(AgentTemplate):
 
     def parse_input(self, input_object: InputObject, agent_input: dict) -> dict:
         agent_input['input'] = input_object.get_data('input')
+        detail_tool = ToolManager().get_instance_obj('pet_insurance_info_tool')
+        tool_res = detail_tool.run(query='宠物医保')
+        input_object.add_data('prod_description', tool_res)
         return agent_input
 
     def parse_result(self, agent_result: dict) -> dict:
         return agent_result
 
     def execute(self, input_object: InputObject, agent_input: dict, **kwargs) -> dict:
-        detail_tool = ToolManager().get_instance_obj('pet_insurance_info_tool')
-        tool_res = detail_tool.run(query='宠物医保')
-        input_object.add_data('prod_description', tool_res)
-
         agents = self._generate_agents()
 
         # 1. planning agent.
-        planning_result = self._invoke_planning(input_object, agent_input, agents)
+        self._invoke_planning(input_object, agent_input, agents)
 
         # 2. executing agent.
-        executing_result = self._invoke_executing(input_object, agents)
+        self._invoke_executing(input_object, agents)
 
         # 3. expressing agent.
         expressing_result = self._invoke_expressing(input_object, agents)
