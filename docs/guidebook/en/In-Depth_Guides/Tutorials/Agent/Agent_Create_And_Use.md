@@ -1,5 +1,5 @@
 # How to create agents.
-You may have already learned how to quickly create an agent from the [Quick Start](../../../Get_Start/Quick_Start.md) chapter, or you may have grasped the essential components of an agent from the [Principles of Agents](../../../In-Depth_Guides/Tutorials/Agent/Agent.md) section.
+You may have already learned how to quickly create an agent from the [Quick Guide to Building Single Agent](../../../Get_Start/3.Quick_Guide_to_Build_Single_Agent.md) chapter, or you may have grasped the essential components of an agent from the [Principles of Agents](../../../In-Depth_Guides/Tutorials/Agent/Agent.md) section.
 
 Based on the design features of the agentUniverse framework's domain components, the creation process of an agent involves two main parts.
 * agent_xx.yaml
