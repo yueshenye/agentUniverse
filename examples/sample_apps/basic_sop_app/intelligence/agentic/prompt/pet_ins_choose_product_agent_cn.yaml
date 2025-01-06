@@ -63,7 +63,7 @@ instruction: |
   
   开始！
   
-  用户的问题是: {query}
+  用户的问题是: {input}
   你需要回答的答案是:
 metadata:
   type: 'PROMPT'

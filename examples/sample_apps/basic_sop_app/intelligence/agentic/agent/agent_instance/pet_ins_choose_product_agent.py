@@ -18,7 +18,7 @@ class ChooseProductAgent(AgentTemplate):
 
     def input_keys(self) -> list[str]:
         """Return the input keys of the Agent."""
-        return ['query']
+        return ['input']
 
     def output_keys(self) -> list[str]:
         """Return the output keys of the Agent."""
@@ -68,8 +68,8 @@ class ChooseProductAgent(AgentTemplate):
                                                                   instruction=profile_instruction)
 
         # get the prompt by the prompt version
-        query = agent_input.get('query')
-        if "宠物医疗险" in query:
+        input = agent_input.get('input')
+        if "宠物医疗险" in input:
             version_prompt: Prompt = PromptManager().get_instance_obj('choose_product_agent_v2.cn')
         else:
             version_prompt: Prompt = PromptManager().get_instance_obj(self.prompt_version)
