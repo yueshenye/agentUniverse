@@ -3,7 +3,7 @@
 # @Time    : 2024/12/12 23:03
 # @Author  : jijiawei
 # @Email   : jijiawei.jjw@antgroup.com
-# @FileName: pet_insurance_consult_agent_test.py
+# @FileName: insurance_consult_agent_test.py
 from agentuniverse.base.agentuniverse import AgentUniverse
 from agentuniverse.agent.agent import Agent
 from agentuniverse.agent.agent_manager import AgentManager
@@ -18,5 +18,5 @@ def chat(question: str):
 
 
 if __name__ == '__main__':
-    res = chat("保险怎么升级")
+    res = chat("保险产品A怎么升级")
     print("The result of the multi-agent execution is: \n" + res)

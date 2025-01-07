@@ -53,4 +53,4 @@ instruction: |
   你拆解后的问题是:
 metadata:
   type: 'PROMPT'
-  version: 'pet_planning_query_agent.cn'
+  version: 'planning_query_agent.cn'

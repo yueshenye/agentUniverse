@@ -22,5 +22,5 @@ def chat(question: str, session_id: str):
 
 if __name__ == '__main__':
     s_id = str(uuid.uuid4())
-    chat("保险怎么升级", s_id)
+    chat("保险产品A怎么升级", s_id)
     chat("我刚才问了什么问题", s_id)

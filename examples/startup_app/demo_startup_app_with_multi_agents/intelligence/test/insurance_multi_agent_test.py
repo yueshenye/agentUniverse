@@ -19,4 +19,4 @@ def chat(question: str):
 
 
 if __name__ == '__main__':
-    chat("保险怎么升级")
+    chat("保险产品A怎么升级")
