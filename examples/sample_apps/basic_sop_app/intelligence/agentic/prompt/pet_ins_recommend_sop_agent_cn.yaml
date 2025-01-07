@@ -37,7 +37,7 @@ instruction: |
   
   回答问题简要精炼，突出重点，不要有重复信息，也不要重复回答！
   
-  用户的问题是: {query}
+  用户的问题是: {input}
 metadata:
   type: 'PROMPT'
   version: 'pet_ins_recommend_sop_agent.cn'

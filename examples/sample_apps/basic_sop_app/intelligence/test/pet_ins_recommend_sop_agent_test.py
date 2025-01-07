@@ -13,7 +13,7 @@ AgentUniverse().start(config_path='../../config/config.toml', core_mode=True)
 
 def chat(question: str):
     instance: Agent = AgentManager().get_instance_obj('pet_ins_recommend_sop_agent')
-    return instance.run(query=question)
+    return instance.run(input=question)
 
 
 if __name__ == '__main__':
