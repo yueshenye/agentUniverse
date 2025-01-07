@@ -12,7 +12,7 @@ from agentuniverse.agent.input_object import InputObject
 from agentuniverse.base.util.logging.logging_util import LOGGER
 
 
-class PetInsuranceExecutingAgent(Agent):
+class InsuranceExecutingAgent(Agent):
 
     def input_keys(self) -> list[str]:
         return ['sub_query_list']
@@ -26,11 +26,11 @@ class PetInsuranceExecutingAgent(Agent):
 
     def parse_result(self, agent_result: dict) -> dict:
         search_context = agent_result['search_context']
-        LOGGER.info(f'智能体 pet_insurance_executing_agent 执行结果为： {search_context}')
+        LOGGER.info(f'智能体 insurance_executing_agent 执行结果为： {search_context}')
         return {**agent_result, 'search_context': search_context}
 
     def execute(self, input_object: InputObject, agent_input: dict, **kwargs) -> dict:
-        search_tool: Tool = ToolManager().get_instance_obj('pet_insurance_search_context_tool')
+        search_tool: Tool = ToolManager().get_instance_obj('insurance_search_context_tool')
         search_res = ''
         for sub_query in agent_input.get('sub_query_list'):
             search_res += search_tool.run(input=sub_query) + '\n'

@@ -4,7 +4,7 @@
 # @Time    : 2024/12/26 20:56
 # @Author  : wangchongshi
 # @Email   : wangchongshi.wcs@antgroup.com
-# @FileName: pet_insurance_expressing_agent.py
+# @FileName: insurance_expressing_agent.py
 from langchain_core.output_parsers import StrOutputParser
 
 from agentuniverse.agent.agent import Agent
@@ -15,7 +15,7 @@ from agentuniverse.llm.llm import LLM
 from agentuniverse.prompt.prompt import Prompt
 
 
-class PetInsuranceExpressingAgent(Agent):
+class InsuranceExpressingAgent(Agent):
 
     def input_keys(self) -> list[str]:
         return ['input', 'prod_description', 'search_context']
@@ -31,7 +31,7 @@ class PetInsuranceExpressingAgent(Agent):
 
     def parse_result(self, agent_result: dict) -> dict:
         output = agent_result['output']
-        LOGGER.info(f'智能体 pet_insurance_expressing_agent 执行结果为： {output}')
+        LOGGER.info(f'智能体 insurance_expressing_agent 执行结果为： {output}')
         return {**agent_result, 'output': output}
 
     def execute(self, input_object: InputObject, agent_input: dict, **kwargs) -> dict:

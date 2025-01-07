@@ -4,7 +4,7 @@
 # @Time    : 2024/12/26 17:10
 # @Author  : wangchongshi
 # @Email   : wangchongshi.wcs@antgroup.com
-# @FileName: pet_insurance_agent.py
+# @FileName: insurance_agent.py
 from langchain_core.output_parsers import StrOutputParser
 
 from agentuniverse.agent.agent import Agent
@@ -18,7 +18,7 @@ from examples.startup_app.demo_startup_app_with_single_agent.intelligence.utils.
     PROD_DESCRIPTION_A
 
 
-class PetInsuranceAgent(Agent):
+class InsuranceAgent(Agent):
 
     def input_keys(self) -> list[str]:
         return ['input', 'session_id']
@@ -35,7 +35,7 @@ class PetInsuranceAgent(Agent):
         return {**agent_result, 'output': agent_result['output']}
 
     def execute(self, input_object: InputObject, agent_input: dict, **kwargs) -> dict:
-        """Execute pet insurance agent instance.
+        """Execute insurance agent instance.
 
         Args:
             input_object (InputObject): input parameters passed by the user.

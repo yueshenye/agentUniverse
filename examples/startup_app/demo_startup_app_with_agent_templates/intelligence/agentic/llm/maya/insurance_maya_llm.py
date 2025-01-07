@@ -4,7 +4,7 @@
 # @Time    : 2024/12/25 16:39
 # @Author  : wangchongshi
 # @Email   : wangchongshi.wcs@antgroup.com
-# @FileName: pet_insurance_maya_llm.py
+# @FileName: insurance_maya_llm.py
 import json
 from typing import Any, Optional, List, Union, Iterator
 
@@ -18,9 +18,9 @@ from examples.startup_app.demo_startup_app_with_single_agent.intelligence.agenti
     LangChainInstance
 
 
-class PetInsuranceMayaLLM(LLM):
+class InsuranceMayaLLM(LLM):
     """
-    PetInsuranceMayaLLM是一个企业内部私有模型连接示例，通过配置sceneName（模型场景码）/ chainName（模型版本号）/ serviceId（模型服务ID）/ endpoint（模型url）等信息，联通私有模型服务。
+    InsuranceMayaLLM是一个企业内部私有模型连接示例，通过配置sceneName（模型场景码）/ chainName（模型版本号）/ serviceId（模型服务ID）/ endpoint（模型url）等信息，联通私有模型服务。
 
     模型入参包括prompt/stop/temperature等信息；
     模型出参：
@@ -40,7 +40,7 @@ class PetInsuranceMayaLLM(LLM):
             {"out_string": "."}
         ]
     """
-    model_name: Optional[str] = "pet_insurance_maya_llm"
+    model_name: Optional[str] = "insurance_maya_llm"
     sceneName: Optional[str] = None
     chainName: Optional[str] = None
     serviceId: Optional[str] = None
@@ -190,7 +190,7 @@ class PetInsuranceMayaLLM(LLM):
             if output:
                 yield output
 
-    def set_by_agent_model(self, **kwargs) -> 'PetInsuranceMayaLLM':
+    def set_by_agent_model(self, **kwargs) -> 'InsuranceMayaLLM':
         copied_obj = super().set_by_agent_model(**kwargs)
         if "ext_info" in kwargs:
             ext_info = kwargs.get("ext_info", self.ext_info)

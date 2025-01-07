@@ -12,11 +12,11 @@ AgentUniverse().start(config_path='../../config/config.toml', core_mode=True)
 
 
 def chat(question: str):
-    instance: Agent = AgentManager().get_instance_obj('pet_insurance_consult_pro_agent')
+    instance: Agent = AgentManager().get_instance_obj('insurance_consult_pro_agent')
     output = instance.run(input=question)
     return output.get_data('output')
 
 
 if __name__ == '__main__':
-    res = chat("医保怎么升级")
+    res = chat("保险怎么升级")
     print("The result of the multi-agent execution is: \n" + res)

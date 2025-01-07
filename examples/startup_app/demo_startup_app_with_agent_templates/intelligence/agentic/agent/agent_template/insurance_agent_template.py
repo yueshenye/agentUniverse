@@ -4,7 +4,7 @@
 # @Time    : 2024/12/12 22:54
 # @Author  : jijiawei
 # @Email   : jijiawei.jjw@antgroup.com
-# @FileName: PetAgentTemplate.py
+# @FileName: insurance_agent_template.py
 import json
 
 from agentuniverse.agent.action.tool.tool_manager import ToolManager
@@ -16,7 +16,7 @@ from agentuniverse.agent.template.agent_template import AgentTemplate
 from agentuniverse.base.config.component_configer.configers.agent_configer import AgentConfiger
 
 
-class PetAgentTemplate(AgentTemplate):
+class InsuranceAgentTemplate(AgentTemplate):
     planning_agent_name: str = None
     executing_agent_name: str = None
     expressing_agent_name: str = None
@@ -31,8 +31,8 @@ class PetAgentTemplate(AgentTemplate):
 
     def parse_input(self, input_object: InputObject, agent_input: dict) -> dict:
         agent_input['input'] = input_object.get_data('input')
-        detail_tool = ToolManager().get_instance_obj('pet_insurance_info_tool')
-        tool_res = detail_tool.run(query='宠物医保')
+        detail_tool = ToolManager().get_instance_obj('insurance_info_tool')
+        tool_res = detail_tool.run(query='保险产品A')
         input_object.add_data('prod_description', tool_res)
         return agent_input
 
@@ -90,7 +90,7 @@ class PetAgentTemplate(AgentTemplate):
                 'executing': executing_agent,
                 'expressing': expressing_agent}
 
-    def initialize_by_component_configer(self, component_configer: AgentConfiger) -> 'PetAgentTemplate':
+    def initialize_by_component_configer(self, component_configer: AgentConfiger) -> 'InsuranceAgentTemplate':
         super().initialize_by_component_configer(component_configer)
         if self.agent_model.profile.get('planning') is not None:
             self.planning_agent_name = self.agent_model.profile.get('planning')
