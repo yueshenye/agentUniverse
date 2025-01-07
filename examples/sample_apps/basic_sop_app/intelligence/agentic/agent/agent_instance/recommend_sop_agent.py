@@ -3,7 +3,7 @@
 # @Time    : 2024/12/16 14:08
 # @Author  : jijiawei
 # @Email   : jijiawei.jjw@antgroup.com
-# @FileName: pet_ins_recommend_sop_agent.py
+# @FileName: recommend_sop_agent.py
 from langchain_core.output_parsers import StrOutputParser
 
 from agentuniverse.base.util.prompt_util import process_llm_token
@@ -22,7 +22,7 @@ from agentuniverse.prompt.prompt import Prompt
 from examples.sample_apps.basic_sop_app.intelligence.utils.constant import product_info
 
 
-class PetInsRecommendSopAgent(AgentTemplate):
+class RecommendSopAgent(AgentTemplate):
 
     def input_keys(self) -> list[str]:
         """Return the input keys of the Agent."""
@@ -43,7 +43,7 @@ class PetInsRecommendSopAgent(AgentTemplate):
         """
         for key, value in input_object.to_dict().items():
             agent_input[key] = value
-        LOGGER.info(f"pet agent, agent input: {agent_input}, input_object: {input_object.to_dict()}")
+        LOGGER.info(f"agent, agent input: {agent_input}, input_object: {input_object.to_dict()}")
         return agent_input
 
     def parse_result(self, agent_result: dict) -> dict:
@@ -70,8 +70,8 @@ class PetInsRecommendSopAgent(AgentTemplate):
         LOGGER.info(f"choose_product_info_agent_res: {choose_product_info_agent_res.to_dict()}")
         product_info_item_list = choose_product_info_agent_res.get_data('item_list')
 
-        # invoke pet_ins_product_info_tool to get product info under items
-        product_description_dict: dict = ToolManager().get_instance_obj('pet_ins_product_info_tool').run(
+        # invoke product_info_tool to get product info under items
+        product_description_dict: dict = ToolManager().get_instance_obj('product_info_tool').run(
             input=product_info_item_list)
         input_object.add_data('product_b_description', product_description_dict['B'])
         input_object.add_data('product_c_description', product_description_dict['C'])
@@ -88,7 +88,7 @@ class PetInsRecommendSopAgent(AgentTemplate):
         # bottom line logic for product choice
         if not product_list:
             product_list = ["B"]
-            choose_product_reason += "\n根据您的要求未能找到合适的产品，建议看看下面的产品宠物责任险"
+            choose_product_reason += "\n根据您的要求未能找到合适的产品，建议看看下面的产品"
 
         # construct inputs for llm
         agent_input['reason'] = choose_product_reason
@@ -112,5 +112,5 @@ class PetInsRecommendSopAgent(AgentTemplate):
         chain = prompt.as_langchain() | llm.as_langchain_runnable(
             self.agent_model.llm_params()) | StrOutputParser()
         res = self.invoke_chain(chain, agent_input, input_object, **kwargs)
-        LOGGER.info(f"pet insurance recommend sop agent res: {res}")
+        LOGGER.info(f"product recommend sop agent res: {res}")
         return {'output': res}

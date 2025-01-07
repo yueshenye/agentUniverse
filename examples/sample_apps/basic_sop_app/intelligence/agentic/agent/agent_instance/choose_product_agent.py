@@ -3,7 +3,7 @@
 # @Time    : 2024/12/16 14:07
 # @Author  : jijiawei
 # @Email   : jijiawei.jjw@antgroup.com
-# @FileName: pet_ins_choose_product_agent.py
+# @FileName: choose_product_agent.py
 from agentuniverse.agent.input_object import InputObject
 from agentuniverse.agent.template.agent_template import AgentTemplate
 from agentuniverse.base.config.component_configer.configers.agent_configer import AgentConfiger
@@ -69,7 +69,7 @@ class ChooseProductAgent(AgentTemplate):
 
         # get the prompt by the prompt version
         input = agent_input.get('input')
-        if "宠物医疗险" in input:
+        if "医疗险" in input:
             version_prompt: Prompt = PromptManager().get_instance_obj('choose_product_agent_v2.cn')
         else:
             version_prompt: Prompt = PromptManager().get_instance_obj(self.prompt_version)

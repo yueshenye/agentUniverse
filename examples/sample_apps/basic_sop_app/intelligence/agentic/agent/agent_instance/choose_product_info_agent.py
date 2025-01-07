@@ -4,7 +4,7 @@
 # @Time    : 2024/11/12 10:36
 # @Author  : wangchongshi
 # @Email   : wangchongshi.wcs@antgroup.com
-# @FileName: pet_ins_choose_product_info_agent.py
+# @FileName: choose_product_info_agent.py
 from agentuniverse.agent.input_object import InputObject
 from agentuniverse.agent.template.agent_template import AgentTemplate
 from agentuniverse.base.config.component_configer.configers.agent_configer import AgentConfiger
