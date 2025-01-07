@@ -16,7 +16,6 @@ from agentuniverse.agent.input_object import InputObject
 from agentuniverse.agent.memory.memory import Memory
 from agentuniverse.agent.output_object import OutputObject
 from agentuniverse.agent.template.agent_template import AgentTemplate
-from agentuniverse.base.config.component_configer.configers.agent_configer import AgentConfiger
 from agentuniverse.base.util.logging.logging_util import LOGGER
 from agentuniverse.llm.llm import LLM
 from agentuniverse.prompt.prompt import Prompt
