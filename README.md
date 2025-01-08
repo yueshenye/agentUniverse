@@ -115,7 +115,7 @@ This feature is jointly developed by [difizen](https://github.com/difizen/magent
 ## Why use agentUniverse
 
 ### Concept
-![](docs/guidebook/_picture/agentuniverse_structure.png)
+![](docs/guidebook/_picture/agentuniverse_structure_en.png)
 
 The core of agentUniverse provides all the essential components needed to build a single intelligent agent, the collaboration mechanisms between multiple agents, and allows for the injection of expert knowledge. The enables developers to effortlessly create intelligent applications equipped with professional know-how.
 
