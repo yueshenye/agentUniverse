@@ -58,7 +58,7 @@ class ThreadWithReturnValue(Thread):
             raise self.error
         return self._return
 
-ThreadPoolExecutorWithReturnValue
+
 class ThreadPoolExecutorWithReturnValue(ThreadPoolExecutor):
 
     def _adjust_thread_count(self):
