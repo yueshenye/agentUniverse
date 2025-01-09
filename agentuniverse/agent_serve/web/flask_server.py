@@ -8,7 +8,7 @@ from concurrent.futures import TimeoutError
 from ..service_instance import ServiceInstance, ServiceNotFoundError
 from .request_task import RequestTask
 from .web_util import request_param, service_run_queue, make_standard_response, FlaskServerManager
-from .thread_with_result import ThreadPoolExecutorWithContext
+from .thread_with_result import ThreadPoolExecutorWithReturnValue
 from ...base.util.logging.logging_util import LOGGER
 from agentuniverse.base.util.logging.log_type_enum import LogTypeEnum
 from agentuniverse.base.util.logging.general_logger import _get_context_prefix
@@ -114,7 +114,7 @@ def service_run(service_id: str, params: dict, saved: bool = False):
         params = {} if params is None else params
         request_task = RequestTask(ServiceInstance(service_id).run, saved,
                                    **params)
-        with ThreadPoolExecutorWithContext() as executor:
+        with ThreadPoolExecutorWithReturnValue() as executor:
             future = executor.submit(request_task.run)
             result = future.result(timeout=FlaskServerManager().sync_service_timeout)
     except TimeoutError:

@@ -58,8 +58,8 @@ class ThreadWithReturnValue(Thread):
             raise self.error
         return self._return
 
-
-class ThreadPoolExecutorWithContext(ThreadPoolExecutor):
+ThreadPoolExecutorWithReturnValue
+class ThreadPoolExecutorWithReturnValue(ThreadPoolExecutor):
 
     def _adjust_thread_count(self):
         # if idle threads are available, don't spin new threads
