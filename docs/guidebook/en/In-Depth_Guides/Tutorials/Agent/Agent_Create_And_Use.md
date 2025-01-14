@@ -340,7 +340,7 @@ In the agentUniverse, all agent entities are managed by a global agent manager. 
 ## Solution 1: Use the agent manager
 
 Through the `get_instance_obj('agent_name_xxx')` method in the agent manager, you can obtain the agent instance with the corresponding name. 
-Furthermore, the agent can be utilized through its own `run(input='xxx')` method. The `test_agent(self)` method in the test class below demonstrates how to debug the agent using this approach.
+Furthermore, the agent can be utilized through its own `run(input='xxx')` method. The `test_demo_agent(self)` method in the test class below demonstrates how to debug the agent using this approach.
 
 ```python
 import unittest
@@ -351,15 +351,15 @@ from agentuniverse.agent.output_object import OutputObject
 from agentuniverse.base.agentuniverse import AgentUniverse
 
 
-class AgentTest(unittest.TestCase):
+class DemoAgentTest(unittest.TestCase):
     """
-    Test cases for the agent
+    Test cases for the demo agent
     """
 
     def setUp(self) -> None:
         AgentUniverse().start(config_path='../../config/config.toml')
 
-    def test_agent(self):
+    def test_demo_agent(self):
         """Test demo agent."""
         instance: Agent = AgentManager().get_instance_obj('demo_agent')
         output_object: OutputObject = instance.run(input="What is the reason for the sharp rise in Nvidia's stock?")
