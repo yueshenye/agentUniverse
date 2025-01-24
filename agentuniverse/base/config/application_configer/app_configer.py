@@ -38,7 +38,7 @@ class AppConfiger(object):
         self.__core_memory_storage_package_list: Optional[list[str]] = None
         self.__core_work_pattern_package_list: Optional[list[str]] = None
         self.__core_log_sink_package_list: Optional[list[str]] = None
-        self.__conversation_memory_configer: Optional[dict] = None
+        self.__conversation_memory_configer: Optional[dict] = {}
 
     @property
     def base_info_appname(self) -> Optional[str]:
@@ -188,5 +188,5 @@ class AppConfiger(object):
         self.__core_memory_storage_package_list = configer.value.get('CORE_PACKAGE', {}).get('memory_storage')
         self.__core_work_pattern_package_list = configer.value.get('CORE_PACKAGE', {}).get('work_pattern')
         self.__core_log_sink_package_list = configer.value.get('CORE_PACKAGE', {}).get('log_sink')
-        self.__conversation_memory_configer = configer.value.get('CONVERSATION_MEMORY')
+        self.__conversation_memory_configer = configer.value.get('CONVERSATION_MEMORY',{})
         return self

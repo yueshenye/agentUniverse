@@ -239,7 +239,6 @@ class ConversationMemoryModule:
         if session_id is None:
             session_id = str(uuid.uuid4())
             FrameworkContextManager().set_context('session_id', session_id)
-
         def add_trace():
             self._add_trace(start_info, target_info, type, params, session_id,
                             trace_id, pair_id)
@@ -311,6 +310,10 @@ class ConversationMemoryModule:
         if auto:
             if not agent_instance.collect_current_memory(target_info.get('type')):
                 return
+            if not self.activate:
+                return
+            if 'agent' not in self.collection_types:
+                return
 
         trace_id = FrameworkContextManager().get_context('trace_id')
         session_id = FrameworkContextManager().get_context('session_id')
@@ -326,7 +329,6 @@ class ConversationMemoryModule:
                 "type": "agent"
             }
             self._add_trace(target_info, start_info, 'output', params, session_id, trace_id, pair_id)
-
         self.queue.put_nowait(add_trace)
 
     def add_llm_input_info(self, start_info: dict, target: str, prompt: str, pair_id: str, auto=True):

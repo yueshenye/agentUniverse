@@ -14,6 +14,8 @@ import uuid
 
 from functools import wraps
 
+from mpmath import monitor
+
 from agentuniverse.agent.memory.conversation_memory.conversation_memory_module import ConversationMemoryModule
 from agentuniverse.base.component.component_enum import ComponentEnum
 from agentuniverse.base.context.framework_context_manager import FrameworkContextManager
@@ -198,50 +200,17 @@ def _get_llm_input(func, *args, **kwargs) -> dict:
 
 
 def get_caller_info(instance: object = None):
-    # 获取上一层调用者的帧
-    func_name = "unknown func"
-    if instance is None:
-        frame = sys._getframe(2)
-        instance = frame.f_locals.get('self')  # 获取调用者对象
-        # 获取调用函数
-        func_name = frame.f_code.co_name
-
-    source = ""
-    type = ""
-    # 判断对象的类型是Agent、Tool、还是其他类型
-    if hasattr(instance, 'component_type') and getattr(instance, 'component_type', None) == ComponentEnum.AGENT:
-        agent_model = getattr(instance, 'agent_model', None)
-        if isinstance(agent_model, object):
-            info = getattr(agent_model, 'info', None)
-            if isinstance(info, dict):
-                source = info.get('name', None)
-                type = 'agent'
-    elif hasattr(instance, 'component_type'):
-        component = getattr(instance, 'component_type', None)
-        if component == ComponentEnum.TOOL:
-            source = getattr(instance, 'name', None)
-            type = 'tool'
-        elif component == ComponentEnum.WORK_PATTERN:
-            # 智能体调用的work_pattern, frame需要向上找一层
-            frame = sys._getframe(4)
-            return get_caller_info(frame.f_locals.get('self'))
-        elif component == ComponentEnum.KNOWLEDGE:
-            source = getattr(instance, 'name', None)
-            type = 'knowledge'
-        elif component == ComponentEnum.SERVICE:
-            source = getattr(instance, 'name', None)
-            type = 'user'
-    elif instance is not None:
-        source = instance.__class__.__qualname__
-        type = "unknown"
+    source_list = Monitor.get_invocation_chain()
+    if len(source_list) > 0:
+        return {
+            'source': source_list[-1].get('source'),
+            'type': source_list[-1].get('type')
+        }
     else:
-        source = func_name
-        type = "unknown"
-    return {
-        'source': source,
-        'type': type
-    }
-
+        return {
+            'source': '',
+            'type': 'user'
+        }
 
 def trace_agent(func):
     """Annotation: @trace_agent
