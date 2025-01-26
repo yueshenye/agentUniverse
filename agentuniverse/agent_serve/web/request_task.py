@@ -7,6 +7,7 @@
 # @FileName: request_task.py
 import asyncio
 import enum
+import traceback
 from enum import Enum
 import json
 import queue
@@ -55,13 +56,13 @@ class RequestTask:
         self.func: callable = func
         self.kwargs = kwargs
         self.request_id = uuid.uuid4().hex
-        self.queue = queue.Queue(maxsize=100)
+        self.queue = queue.Queue(maxsize=1000)
         self.thread: Optional[ThreadWithReturnValue] = None
         self.state = TaskStateEnum.INIT.value
         # Whether save to Database.
         self.saved = saved
         self.__request_do__ = self.add_request_do()
-        self.async_queue = asyncio.Queue(maxsize=200)
+        self.async_queue = asyncio.Queue(maxsize=2000)
         self.async_task = None
 
     def receive_steps(self):
@@ -83,7 +84,7 @@ class RequestTask:
             yield "data:" + json.dumps({"result": result},
                                        ensure_ascii=False) + "\n\n "
         except Exception as e:
-            LOGGER.error("request task execute Fail: " + str(e))
+            LOGGER.error("request task execute Fail: " + str(e)+traceback.format_exc())
             yield "data:" + json.dumps({"error": {"error_msg": str(e)}}) + "\n\n "
 
     async def async_receive_steps(self) -> AsyncIterator[str]:
@@ -227,8 +228,8 @@ class RequestTask:
             result=dict(),
             steps=[],
             additional_args=dict(),
-            gmt_create=int(time.time()),
-            gmt_modified=int(time.time()),
+            gmt_create=datetime.now(),
+            gmt_modified=datetime.now(),
         )
         if self.saved:
             RequestLibrary().add_request(request_do)

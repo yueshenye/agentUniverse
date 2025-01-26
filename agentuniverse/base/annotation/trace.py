@@ -8,12 +8,47 @@
 import asyncio
 import functools
 import inspect
+import time
+import sys
+import uuid
 
 from functools import wraps
 
+from mpmath import monitor
+
+from agentuniverse.agent.memory.conversation_memory.conversation_memory_module import ConversationMemoryModule
+from agentuniverse.base.component.component_enum import ComponentEnum
 from agentuniverse.base.context.framework_context_manager import FrameworkContextManager
 from agentuniverse.base.util.monitor.monitor import Monitor
 from agentuniverse.llm.llm_output import LLMOutput
+from agentuniverse.base.util.logging.logging_util import LOGGER
+
+
+def _get_invocation_chain_str() -> str:
+    invocation_chain_str = ''
+    invocation_chain = Monitor.get_invocation_chain()
+    if len(invocation_chain) > 0:
+        invocation_chain_str = ' -> '.join(
+            [f"source: {d['source']}, type: {d['type']}" for
+             d in invocation_chain]
+        )
+        invocation_chain_str += ' | '
+
+    return invocation_chain_str
+
+
+def _get_au_trace_id_str() -> str:
+    au_trace_id_str = ''
+    trace_id = Monitor.get_trace_id()
+    if trace_id:
+        au_trace_id_str = f'aU trace id: {trace_id} | '
+    return au_trace_id_str
+
+
+def log_trace(log_detail: str):
+    au_trace_id_str = _get_au_trace_id_str()
+    invocation_chain_str = _get_invocation_chain_str()
+    LOGGER.info(au_trace_id_str + invocation_chain_str + log_detail)
 
 
 def trace_llm(func):
@@ -21,6 +56,14 @@ def trace_llm(func):
 
     Decorator to trace the LLM invocation, add llm input and output to the monitor.
     """
+
+    def log_llm_trace_output(output, start_time):
+        cost_time = time.time() - start_time
+        trace_log_str = f"LLM output is:{output}, cost {cost_time} seconds"
+        used_token = Monitor.get_token_usage()
+        if used_token:
+            trace_log_str += f", token usage: {used_token}"
+        log_trace(trace_log_str)
 
     @wraps(func)
     async def wrapper_async(*args, **kwargs):
@@ -40,9 +83,12 @@ def trace_llm(func):
         # add invocation chain to the monitor module.
         Monitor.add_invocation_chain({'source': source, 'type': 'llm'})
 
+        start_time = time.time()
+
         if self and hasattr(self, 'tracing'):
-            if self.tracing is False:
+            if not self.tracing:
                 return await func(*args, **kwargs)
+            log_trace(f"LLM input is: {llm_input}")
 
         # invoke function
         result = await func(*args, **kwargs)
@@ -50,6 +96,13 @@ def trace_llm(func):
         if isinstance(result, LLMOutput):
             # add llm invocation info to monitor
             Monitor().trace_llm_invocation(source=func.__qualname__, llm_input=llm_input, llm_output=result.text)
+
+            # add llm token usage to monitor
+            trace_llm_token_usage(self, llm_input, result.text)
+
+            log_llm_trace_output(result.text, start_time)
+            Monitor.pop_invocation_chain()
+
             return result
         else:
             # streaming
@@ -59,8 +112,14 @@ def trace_llm(func):
                     llm_output.append(chunk.text)
                     yield chunk
                 # add llm invocation info to monitor
+                output_str = "".join(llm_output)
                 Monitor().trace_llm_invocation(source=func.__qualname__, llm_input=llm_input,
-                                               llm_output="".join(llm_output))
+                                               llm_output=output_str)
+                # add llm token usage to monitor
+                trace_llm_token_usage(self, llm_input, output_str)
+
+                log_llm_trace_output(output_str, start_time)
+                Monitor.pop_invocation_chain()
 
             return gen_iterator()
 
@@ -82,9 +141,12 @@ def trace_llm(func):
         # add invocation chain to the monitor module.
         Monitor.add_invocation_chain({'source': source, 'type': 'llm'})
 
+        start_time = time.time()
+
         if self and hasattr(self, 'tracing'):
-            if self.tracing is False:
+            if not self.tracing:
                 return func(*args, **kwargs)
+            log_trace(f"LLM input is: {llm_input}")
 
         # invoke function
         result = func(*args, **kwargs)
@@ -95,6 +157,8 @@ def trace_llm(func):
 
             # add llm token usage to monitor
             trace_llm_token_usage(self, llm_input, result.text)
+            log_llm_trace_output(result.text, start_time)
+            Monitor.pop_invocation_chain()
 
             return result
         else:
@@ -114,6 +178,9 @@ def trace_llm(func):
                 # add llm token usage to monitor
                 trace_llm_token_usage(self, llm_input, output_str)
 
+                log_llm_trace_output(output_str, start_time)
+                Monitor.pop_invocation_chain()
+
             return gen_iterator()
 
     if asyncio.iscoroutinefunction(func):
@@ -132,6 +199,19 @@ def _get_llm_input(func, *args, **kwargs) -> dict:
     return {k: v for k, v in bound_args.arguments.items()}
 
 
+def get_caller_info(instance: object = None):
+    source_list = Monitor.get_invocation_chain()
+    if len(source_list) > 0:
+        return {
+            'source': source_list[-1].get('source'),
+            'type': source_list[-1].get('type')
+        }
+    else:
+        return {
+            'source': '',
+            'type': 'user'
+        }
+
 def trace_agent(func):
     """Annotation: @trace_agent
 
@@ -145,7 +225,6 @@ def trace_agent(func):
         # check whether the tracing switch is enabled
         source = func.__qualname__
         self = agent_input.pop('self', None)
-
         tracing = None
         if isinstance(self, object):
             agent_model = getattr(self, 'agent_model', None)
@@ -156,27 +235,31 @@ def trace_agent(func):
                     source = info.get('name', None)
                 if isinstance(profile, dict):
                     tracing = profile.get('tracing', None)
-
+        start_info = get_caller_info()
+        pair_id = f"agent_{uuid.uuid4().hex}"
+        ConversationMemoryModule().add_agent_input_info(start_info, self, agent_input, pair_id)
         # add invocation chain to the monitor module.
         Monitor.add_invocation_chain({'source': source, 'type': 'agent'})
-
-        if tracing is False:
+        if not tracing:
             return await func(*args, **kwargs)
-
+        kwargs['memory_source_info'] = start_info
         # invoke function
         result = await func(*args, **kwargs)
         # add agent invocation info to monitor
         Monitor().trace_agent_invocation(source=source, agent_input=agent_input, agent_output=result)
+        ConversationMemoryModule().add_agent_result_info(self, result, start_info, pair_id)
         return result
 
     @functools.wraps(func)
     def wrapper_sync(*args, **kwargs):
+        Monitor.init_trace_id()
+        Monitor.init_invocation_chain()
+
         # get agent input from arguments
         agent_input = _get_input(func, *args, **kwargs)
         # check whether the tracing switch is enabled
         source = func.__qualname__
         self = agent_input.pop('self', None)
-
         tracing = None
         if isinstance(self, object):
             agent_model = getattr(self, 'agent_model', None)
@@ -187,17 +270,27 @@ def trace_agent(func):
                     source = info.get('name', None)
                 if isinstance(profile, dict):
                     tracing = profile.get('tracing', None)
-
+        pair_id = f"agent_{uuid.uuid4().hex}"
+        start_info = get_caller_info()
+        kwargs['memory_source_info'] = start_info
+        ConversationMemoryModule().add_agent_input_info(start_info, self, agent_input, pair_id)
         # add invocation chain to the monitor module.
         Monitor.add_invocation_chain({'source': source, 'type': 'agent'})
+        start_time = time.time()
 
-        if tracing is False:
+        if not tracing:
             return func(*args, **kwargs)
+        log_trace(f"AGENT input is: {agent_input}")
 
         # invoke function
         result = func(*args, **kwargs)
-        # add agent invocation info to monitor
+        ConversationMemoryModule().add_agent_result_info(self, result, start_info, pair_id)
         Monitor().trace_agent_invocation(source=source, agent_input=agent_input, agent_output=result)
+
+        cost_time = time.time() - start_time
+        log_trace(f"Agent output is:{result.to_json_str()}, cost {cost_time} seconds")
+        Monitor.pop_invocation_chain()
+
         return result
 
     if asyncio.iscoroutinefunction(func):
@@ -226,12 +319,15 @@ def trace_tool(func):
             name = getattr(self, 'name', None)
             if name is not None:
                 source = name
-
+        start_info = get_caller_info()
+        pair_id = f"tool_{uuid.uuid4().hex}"
+        ConversationMemoryModule().add_tool_input_info(start_info, source, tool_input, pair_id)
         # add invocation chain to the monitor module.
         Monitor.add_invocation_chain({'source': source, 'type': 'tool'})
-
+        result = func(*args, **kwargs)
+        ConversationMemoryModule().add_tool_output_info(start_info, source, params=result, pair_id=pair_id)
         # invoke function
-        return func(*args, **kwargs)
+        return result
 
     # sync function
     return wrapper_sync
@@ -256,11 +352,16 @@ def trace_knowledge(func):
             if name is not None:
                 source = name
 
+        start = get_caller_info()
+        pair_id = f"knowledge_{uuid.uuid4().hex}"
+        ConversationMemoryModule().add_knowledge_input_info(start, source, knowledge_input, pair_id)
         # add invocation chain to the monitor module.
         Monitor.add_invocation_chain({'source': source, 'type': 'knowledge'})
 
         # invoke function
-        return func(*args, **kwargs)
+        result = func(*args, **kwargs)
+        ConversationMemoryModule().add_knowledge_output_info(start, source, params=result, pair_id=pair_id)
+        return result
 
     # sync function
     return wrapper_sync
