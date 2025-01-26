@@ -83,12 +83,12 @@ def trace_llm(func):
         # add invocation chain to the monitor module.
         Monitor.add_invocation_chain({'source': source, 'type': 'llm'})
 
-        log_trace(f"LLM input is: {llm_input}")
         start_time = time.time()
 
         if self and hasattr(self, 'tracing'):
-            if self.tracing is False:
+            if not self.tracing:
                 return await func(*args, **kwargs)
+            log_trace(f"LLM input is: {llm_input}")
 
         # invoke function
         result = await func(*args, **kwargs)
@@ -141,12 +141,12 @@ def trace_llm(func):
         # add invocation chain to the monitor module.
         Monitor.add_invocation_chain({'source': source, 'type': 'llm'})
 
-        log_trace(f"LLM input is: {llm_input}")
         start_time = time.time()
 
         if self and hasattr(self, 'tracing'):
-            if self.tracing is False:
+            if not self.tracing:
                 return func(*args, **kwargs)
+            log_trace(f"LLM input is: {llm_input}")
 
         # invoke function
         result = func(*args, **kwargs)
@@ -240,7 +240,7 @@ def trace_agent(func):
         ConversationMemoryModule().add_agent_input_info(start_info, self, agent_input, pair_id)
         # add invocation chain to the monitor module.
         Monitor.add_invocation_chain({'source': source, 'type': 'agent'})
-        if tracing is False:
+        if not tracing:
             return await func(*args, **kwargs)
         kwargs['memory_source_info'] = start_info
         # invoke function
@@ -276,12 +276,11 @@ def trace_agent(func):
         ConversationMemoryModule().add_agent_input_info(start_info, self, agent_input, pair_id)
         # add invocation chain to the monitor module.
         Monitor.add_invocation_chain({'source': source, 'type': 'agent'})
-
-        log_trace(f"AGENT input is: {agent_input}")
         start_time = time.time()
 
-        if tracing is False:
+        if not tracing:
             return func(*args, **kwargs)
+        log_trace(f"AGENT input is: {agent_input}")
 
         # invoke function
         result = func(*args, **kwargs)
