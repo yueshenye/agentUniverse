@@ -9,9 +9,15 @@ import asyncio
 import functools
 import inspect
 import time
+import sys
+import uuid
 
 from functools import wraps
 
+from mpmath import monitor
+
+from agentuniverse.agent.memory.conversation_memory.conversation_memory_module import ConversationMemoryModule
+from agentuniverse.base.component.component_enum import ComponentEnum
 from agentuniverse.base.context.framework_context_manager import FrameworkContextManager
 from agentuniverse.base.util.monitor.monitor import Monitor
 from agentuniverse.llm.llm_output import LLMOutput
@@ -193,6 +199,19 @@ def _get_llm_input(func, *args, **kwargs) -> dict:
     return {k: v for k, v in bound_args.arguments.items()}
 
 
+def get_caller_info(instance: object = None):
+    source_list = Monitor.get_invocation_chain()
+    if len(source_list) > 0:
+        return {
+            'source': source_list[-1].get('source'),
+            'type': source_list[-1].get('type')
+        }
+    else:
+        return {
+            'source': '',
+            'type': 'user'
+        }
+
 def trace_agent(func):
     """Annotation: @trace_agent
 
@@ -206,7 +225,6 @@ def trace_agent(func):
         # check whether the tracing switch is enabled
         source = func.__qualname__
         self = agent_input.pop('self', None)
-
         tracing = None
         if isinstance(self, object):
             agent_model = getattr(self, 'agent_model', None)
@@ -217,17 +235,19 @@ def trace_agent(func):
                     source = info.get('name', None)
                 if isinstance(profile, dict):
                     tracing = profile.get('tracing', None)
-
+        start_info = get_caller_info()
+        pair_id = f"agent_{uuid.uuid4().hex}"
+        ConversationMemoryModule().add_agent_input_info(start_info, self, agent_input, pair_id)
         # add invocation chain to the monitor module.
         Monitor.add_invocation_chain({'source': source, 'type': 'agent'})
-
         if tracing is False:
             return await func(*args, **kwargs)
-
+        kwargs['memory_source_info'] = start_info
         # invoke function
         result = await func(*args, **kwargs)
         # add agent invocation info to monitor
         Monitor().trace_agent_invocation(source=source, agent_input=agent_input, agent_output=result)
+        ConversationMemoryModule().add_agent_result_info(self, result, start_info, pair_id)
         return result
 
     @functools.wraps(func)
@@ -240,7 +260,6 @@ def trace_agent(func):
         # check whether the tracing switch is enabled
         source = func.__qualname__
         self = agent_input.pop('self', None)
-
         tracing = None
         if isinstance(self, object):
             agent_model = getattr(self, 'agent_model', None)
@@ -251,7 +270,10 @@ def trace_agent(func):
                     source = info.get('name', None)
                 if isinstance(profile, dict):
                     tracing = profile.get('tracing', None)
-
+        pair_id = f"agent_{uuid.uuid4().hex}"
+        start_info = get_caller_info()
+        kwargs['memory_source_info'] = start_info
+        ConversationMemoryModule().add_agent_input_info(start_info, self, agent_input, pair_id)
         # add invocation chain to the monitor module.
         Monitor.add_invocation_chain({'source': source, 'type': 'agent'})
 
@@ -263,7 +285,7 @@ def trace_agent(func):
 
         # invoke function
         result = func(*args, **kwargs)
-        # add agent invocation info to monitor
+        ConversationMemoryModule().add_agent_result_info(self, result, start_info, pair_id)
         Monitor().trace_agent_invocation(source=source, agent_input=agent_input, agent_output=result)
 
         cost_time = time.time() - start_time
@@ -298,12 +320,15 @@ def trace_tool(func):
             name = getattr(self, 'name', None)
             if name is not None:
                 source = name
-
+        start_info = get_caller_info()
+        pair_id = f"tool_{uuid.uuid4().hex}"
+        ConversationMemoryModule().add_tool_input_info(start_info, source, tool_input, pair_id)
         # add invocation chain to the monitor module.
         Monitor.add_invocation_chain({'source': source, 'type': 'tool'})
-
+        result = func(*args, **kwargs)
+        ConversationMemoryModule().add_tool_output_info(start_info, source, params=result, pair_id=pair_id)
         # invoke function
-        return func(*args, **kwargs)
+        return result
 
     # sync function
     return wrapper_sync
@@ -328,11 +353,16 @@ def trace_knowledge(func):
             if name is not None:
                 source = name
 
+        start = get_caller_info()
+        pair_id = f"knowledge_{uuid.uuid4().hex}"
+        ConversationMemoryModule().add_knowledge_input_info(start, source, knowledge_input, pair_id)
         # add invocation chain to the monitor module.
         Monitor.add_invocation_chain({'source': source, 'type': 'knowledge'})
 
         # invoke function
-        return func(*args, **kwargs)
+        result = func(*args, **kwargs)
+        ConversationMemoryModule().add_knowledge_output_info(start, source, params=result, pair_id=pair_id)
+        return result
 
     # sync function
     return wrapper_sync
