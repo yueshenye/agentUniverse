@@ -18,6 +18,19 @@ Here is the list of commit types:
 * test: Testing-related submissions or tools (e.g., test: add unit tests for agent loading module)
 * chore: Other changes (e.g., chore: replace project icon image)
 
+##### Guideline for PR
+During the PR submission process, we follow the aforementioned commit types. You can choose the type as a PR label based on the main content of your submission.
+
+Please ensure that you meet the following requirements when submitting your PR:
+
+- Read and understand the requirements outlined in the [Contributor Guidelines](https://github.com/antgroup/agentUniverse/blob/master/CONTRIBUTING.md).
+- Check for any duplicate features related to this request and communicated with the project maintainers.
+- Accept the suggestion of the maintainers to make changes to or close this PR.
+- Submit the test files and can provide screenshots of the test results (required for feature or bug fixes).
+- Add or modified the documentation related to this PR.
+- Add examples and notes if needed.
+- Carefully fill out the PR request, including assigning maintainers, providing a detailed description of the PR content, and including necessary explanations and screenshots.
+
 #### Guideline for development
 We recommend following the [python PEP8](https://peps.python.org/pep-0008/) and [Google Python Style](https://google.github.io/styleguide/pyguide.html) guidelines.
 

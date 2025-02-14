@@ -18,7 +18,17 @@ commit类型列表：
 * test: 测试类或工具提交 (如, test: 添加智能体加载模块单元测试)
 * chore: 其他杂项 (如, chore: 项目icon图片替换)
 
-同样在PR的提交过程中，我们沿用了上述类型，您可在PR提交中根据PR主要内容选择对应类型作为PR标签。
+##### Pull Request规范
+在PR的提交过程中，我们沿用了上述commit类型，您可在PR提交中根据主要内容选择对应类型作为PR标签。
+
+请您确保在提交PR时满足如下要求：
+- 阅读并理解[贡献者指南](https://github.com/antgroup/agentUniverse/blob/master/CONTRIBUTING_zh.md) 的要求。
+- 检查没有与此PR请求重复的功能并与项目维护者进行了沟通。
+- 接受PR配合维护人员的建议进行修改或关闭。
+- 提交测试文件并提供测试结果截图(功能修改、BUG修复类PR必须提供，其他按需)
+- 添加或修改本次pr对应的文档说明(非必要，根据实际PR内容按需添加)
+- 添加使用案例代码与文档说明(非必要，根据实际PR内容按需添加)
+- 认真填写PR请求，包括指定维护人员、详细描述PR内容、提供必要的说明与截图等
 
 #### 研发规范参考
 在代码与注释规范方面，本项目推荐采用[python PEP8](https://peps.python.org/pep-0008/) 与 [Google Python Style](https://google.github.io/styleguide/pyguide.html) 规范。
