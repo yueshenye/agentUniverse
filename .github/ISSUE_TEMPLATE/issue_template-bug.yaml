@@ -1,15 +1,11 @@
----
-name: 🐞 Bug Report | Bug 提交  
-description: Please describe the bug you found. | 请描述您在使用过程中遇到的问题。  
-title: "🐞 [Bug] <your title xxx>"  
+name: 🐞 Bug Report | Bug 提交
+description: Please describe the bug you found. | 请描述您在使用过程中遇到的问题。
+title: "🐞 [Bug] <your title xxx>"
 labels: ["bug"]
----
-
 body:
 - type: markdown
   attributes:
     value: "Please fill out the info before you submit a bug. | 请在您提交 bug 之前，回答以下这些问题。"
-
 - type: textarea
   attributes:
     label: Version
@@ -17,7 +13,6 @@ body:
     placeholder: "Example: version 0.0.13"
   validations:
     required: true
-
 - type: textarea
   attributes:
     label: System
@@ -25,7 +20,6 @@ body:
     placeholder: "Example: Ubuntu 20.04"
   validations:
     required: true
-
 - type: textarea
   attributes:
     label: Actions
@@ -33,7 +27,6 @@ body:
     placeholder: "Describe the actions you took"
   validations:
     required: false
-
 - type: textarea
   attributes:
     label: Problem
@@ -41,7 +34,6 @@ body:
     placeholder: "Describe the problem"
   validations:
     required: false
-
 - type: textarea
   attributes:
     label: Expected
@@ -49,7 +41,6 @@ body:
     placeholder: "Describe the expected results"
   validations:
     required: false
-
 - type: textarea
   attributes:
     label: reproduce
