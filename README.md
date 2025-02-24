@@ -26,6 +26,25 @@ The pattern components that are currently open for use include:
 
 More patterns are coming soon...
 
+The LLM model integration can be accomplished with simple configuration, currently agentUniverse supported models include:
+
+||Vendors|Models|
+|:-----:|:--------:|:------:|
+|![image](https://github.com/user-attachments/assets/b7b0f2ce-3250-4008-b6d7-4712a983deb9)|Qwen|qwen2.5-72b-instruct、qwq-32b-preview、qwen-max、…|
+|![image](https://github.com/user-attachments/assets/5a997feb-bef4-4e53-ac3e-d38221e5399c)|Deepseek|deepseek-r1、deepseek-v3、deepseek-r1-distill-qwen-32b、…|
+|![image](https://github.com/user-attachments/assets/0b50e555-65e8-49b2-b725-f3f71ee7daed)|OpenAI|GPT-4o、GPT-4o mini、OpenAI o1、OpenAI o3-mini、…|
+|![image](https://github.com/user-attachments/assets/60fe0a70-0b47-4ac7-9bc9-8e860732ace9)|Claude|Claude 3.5 Sonnet、Claude 3 Opus、…|
+|![image](https://github.com/user-attachments/assets/334c7f09-7eae-4a65-a70f-2e6531964224)|Gemini|Gemini 2.0 Flash、Gemini 2.0 Flash Thinking、Gemini 1.5 Pro、…|
+|![image](https://github.com/user-attachments/assets/8e41c73f-3103-4305-ad1f-56116ea55523)|Llama|llama3.3-70b-instruct、llama3.2-3b-instruct、llama3.2-1b-instruct、…|
+|![image](https://github.com/user-attachments/assets/19d264c6-e499-4913-9d6d-314d392f2246)|KIMI|moonshot-v1-128k、moonshot-v1-32k、moonshot-v1-8k、…|
+|![image](https://github.com/user-attachments/assets/79572d9a-29d5-4c0e-a336-ce3f8018fb05)|WenXin|ERNIE 4.0、ERNIE 4.0 Turbo、ERNIE 3.5、…|
+|![image](https://github.com/user-attachments/assets/abb5311e-4d70-4e9c-8fca-e5129ae912fc)|chatglm|chatglm3-6b、chatglm-6b-v2、…|
+|![image](https://github.com/user-attachments/assets/fe265f24-4ea6-4ff2-9b50-58ab6706a5f5)|BaiChuan|baichuan2-turbo、baichuan2-13b-chat-v1、…|
+|![image](https://github.com/user-attachments/assets/41ffe268-392f-4ab9-b42d-e30dbd70d66b)|Doubao|Doubao-pro-128k、Doubao-pro-32k、Doubao-lite-128k、…|
+
+For example, to use deepseek model, you can simply set DEEPSEEK_API_KEY value in the custom_key.toml file, and set the llm_model name in the agent configuration file to 'default_deepseek_llm' and you're all set. For more infomation about llm configuration, please refer to [switch-the-llm](https://github.com/antgroup/agentUniverse/blob/master/docs/guidebook/en/Get_Start/2.Run_Your_First_Tutorial_Example.md#switch-the-llm).
+
+
 ****************************************
 
 ## Citation
